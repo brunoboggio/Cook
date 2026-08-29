@@ -122,14 +122,57 @@ class AIRecipeGenerator {
     }
   }
 
-  // --- Dynamic AI Image Generator with nano-banana-2 ---
-  generateAIImageUrl(dishName, customPrompt = null, seed = null) {
+  // --- Dynamic AI Image Generator with Nano Banana 2 ---
+  async generateAIImageUrl(dishName, customPrompt = null, seed = null) {
     const settings = this.getAISettings();
-    const model = settings.imageModel || 'nano-banana-2';
     const cleanSeed = seed || Math.floor(Math.random() * 999999);
-    const cleanPrompt = encodeURIComponent(
-      customPrompt || `professional gourmet delicious food photography of ${dishName}, restaurant culinary plating, cinematic warm lighting, sharp focus, 8k resolution, award winning culinary styling`
-    );
+    const culinaryPrompt = customPrompt || `Award-winning professional gourmet food photography of ${dishName}, restaurant culinary plating on ceramic dish, cinematic warm lighting, sharp focus, 8k resolution, macro food styling`;
+
+    // 1. Try Google AI Studio's native Nano Banana 2 (gemini-3.1-flash-image) if API Key exists
+    if (settings.apiKey && settings.apiKey.trim().length > 10) {
+      const apiKey = settings.apiKey.trim();
+      const nanoBananaModels = [
+        'gemini-3.1-flash-image',
+        'gemini-3.1-flash-image-preview',
+        'gemini-3.1-flash-lite-image',
+        'gemini-3-pro-image',
+        'gemini-2.5-flash-image'
+      ];
+
+      for (const model of nanoBananaModels) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': apiKey
+            },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: culinaryPrompt }] }],
+              generationConfig: { responseModalities: ["IMAGE"] }
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const candidate = data.candidates?.[0];
+            const part = candidate?.content?.parts?.find(p => p.inline_data || p.inlineData);
+            const inline = part?.inline_data || part?.inlineData;
+            if (inline && inline.data) {
+              console.log(`🍌 Nano Banana 2 (${model}) generó la imagen con éxito`);
+              return `data:${inline.mime_type || 'image/jpeg'};base64,${inline.data}`;
+            }
+          }
+        } catch (err) {
+          // Continue to fallback
+        }
+      }
+    }
+
+    // 2. High-speed Pollinations AI image generator with nano-banana-2 / flux
+    const model = settings.imageModel || 'nano-banana-2';
+    const cleanPrompt = encodeURIComponent(culinaryPrompt);
     return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
   }
 
@@ -268,7 +311,7 @@ class AIRecipeGenerator {
     if (onProgress) onProgress({ step: 4, text: '📝 Redactando pasos guiados cronometrados y consejos de Chef...' });
     await this.delay(500);
 
-    const recipe = this.synthesizeRecipe(cleanTitle, cleanNotes, focus, customImage);
+    const recipe = await this.synthesizeRecipe(cleanTitle, cleanNotes, focus, customImage);
 
     if (onProgress) onProgress({ step: 5, text: '✨ ¡Receta completada y lista para cocinar!' });
     await this.delay(300);
@@ -466,7 +509,7 @@ REGLAS ESTRICTAS:
     // Generate image using nano-banana-2
     let finalImage = customImage;
     if (!finalImage) {
-      finalImage = this.generateAIImageUrl(parsed.title || dishName, parsed.imagePrompt);
+      finalImage = await this.generateAIImageUrl(parsed.title || dishName, parsed.imagePrompt);
     }
 
     if (onProgress) {
@@ -513,7 +556,7 @@ REGLAS ESTRICTAS:
   }
 
   // --- Deep Gastronomic Decomposer ---
-  synthesizeRecipe(title, notes, focus, customImage = null) {
+  async synthesizeRecipe(title, notes, focus, customImage = null) {
     const lower = `${title} ${notes}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
     // 1. Determine Meal Category
@@ -542,7 +585,7 @@ REGLAS ESTRICTAS:
     // 6. Select Best Image (Custom Image > AI Generated Pollinations Image > Curated Unsplash Fallback)
     let finalImage = customImage;
     if (!finalImage) {
-      finalImage = this.generateAIImageUrl(title);
+      finalImage = await this.generateAIImageUrl(title);
     }
 
     // Unique Slug ID

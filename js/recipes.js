@@ -743,19 +743,25 @@ function renderAIPreview(recipe) {
   `;
 }
 
-window.regenerateAIPreviewImage = function() {
+window.regenerateAIPreviewImage = async function() {
   if (!tempGeneratedRecipe) return;
-  const newSeed = Math.floor(Math.random() * 999999);
-  const newImgUrl = window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, newSeed);
-  tempGeneratedRecipe.image = newImgUrl;
-  
   const imgEl = document.getElementById('ai-preview-dish-img');
   if (imgEl) {
+    imgEl.style.opacity = '0.5';
+    imgEl.style.filter = 'grayscale(0.5)';
+  }
+  const newSeed = Math.floor(Math.random() * 999999);
+  const newImgUrl = await window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, null, newSeed);
+  tempGeneratedRecipe.image = newImgUrl;
+  
+  if (imgEl) {
     imgEl.src = newImgUrl;
+    imgEl.style.opacity = '1';
+    imgEl.style.filter = 'none';
     imgEl.style.animation = 'pulseAmber 0.8s ease';
     setTimeout(() => { imgEl.style.animation = ''; }, 800);
   }
-  if (window.showToast) window.showToast('🎨 Nueva variante fotográfica generada con IA', 'sky');
+  if (window.showToast) window.showToast('🎨 Fotografía gourmet regenerada con Nano Banana 2', 'sky');
 };
 
 window.saveAndCloseAICreator = async function() {
