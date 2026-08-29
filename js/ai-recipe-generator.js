@@ -83,14 +83,14 @@ class AIRecipeGenerator {
 
   // --- Model Name Normalizer ---
   normalizeModelName(rawModel) {
-    if (!rawModel) return 'gemini-3.7-flash';
+    if (!rawModel) return 'gemini-3.5-flash-lite';
     let m = String(rawModel).trim().toLowerCase();
     if (m.startsWith('models/')) m = m.substring(7);
     if (m === 'gemini-3.7-flash-light' || m === 'gemini-3.7-flash-lite' || m === 'gemini-3.7') return 'gemini-3.7-flash';
     if (m === 'gemini-3.6-flash-light' || m === 'gemini-3.6-flash-lite' || m === 'gemini-3.6') return 'gemini-3.6-flash';
     if (m === 'gemini-3.5-flash-light' || m === 'gemini-3.5-flash') return 'gemini-3.5-flash-lite';
     if (m === 'gemini-3.1-flash-light' || m === 'gemini-3.1-flash') return 'gemini-3.1-flash-lite';
-    if (m === 'gemini-2.5-flash-lite' || m === 'gemini-2.5-flash' || m === 'gemini-2.0-flash' || m === 'gemini-1.5-flash') return 'gemini-3.7-flash';
+    if (m === 'gemini-2.5-flash-lite' || m === 'gemini-2.5-flash' || m === 'gemini-2.0-flash' || m === 'gemini-1.5-flash') return 'gemini-3.5-flash-lite';
     return m;
   }
 
@@ -100,14 +100,14 @@ class AIRecipeGenerator {
       const stored = localStorage.getItem('fridgeflow_ai_config');
       if (stored) {
         const parsed = JSON.parse(stored);
-        parsed.textModel = this.normalizeModelName(parsed.textModel || 'gemini-3.7-flash');
+        parsed.textModel = this.normalizeModelName(parsed.textModel || 'gemini-3.5-flash-lite');
         return parsed;
       }
     } catch (e) {}
     const directKey = localStorage.getItem('fridgeflow_gemini_api_key') || '';
     return {
       apiKey: directKey,
-      textModel: 'gemini-3.7-flash',
+      textModel: 'gemini-3.5-flash-lite',
       imageModel: 'nano-banana-2'
     };
   }
@@ -156,28 +156,28 @@ class AIRecipeGenerator {
     } catch (e) {
       console.warn('No se pudo listar modelos dinámicamente:', e);
     }
-    return ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'];
+    return ['gemini-3.5-flash-lite', 'gemini-3.7-flash', 'gemini-3.1-flash-lite', 'gemini-3.6-flash'];
   }
 
   // --- Google AI Studio Test Connection Ping ---
-  async testGeminiConnection(apiKey, model = 'gemini-3.7-flash') {
+  async testGeminiConnection(apiKey, model = 'gemini-3.5-flash-lite') {
     if (!apiKey || !apiKey.trim()) {
       throw new Error('Debes ingresar una API Key de Google AI Studio.');
     }
 
     const key = apiKey.trim();
-    const primary = this.normalizeModelName(model || 'gemini-3.7-flash');
+    const primary = this.normalizeModelName(model || 'gemini-3.5-flash-lite');
 
     // First attempt to discover dynamic models from user's account
     const discovered = await this.fetchAvailableModels(key).catch(() => []);
 
     const modelsToTry = [
       primary,
-      ...discovered.filter(m => m.includes('flash') || m.includes('pro')),
+      'gemini-3.5-flash-lite',
       'gemini-3.7-flash',
-      'gemini-3.6-flash',
       'gemini-3.1-flash-lite',
-      'gemini-3.5-flash-lite'
+      'gemini-3.6-flash',
+      ...discovered.filter(m => m.includes('flash') || m.includes('pro'))
     ];
     const uniqueModels = [...new Set(modelsToTry)];
 
@@ -279,7 +279,7 @@ class AIRecipeGenerator {
   // --- Real Google AI Studio Gemini API Client ---
   async callGeminiAPI(dishName, userNotes, focus, customImage, onProgress, settings) {
     const apiKey = settings.apiKey.trim();
-    const normalizedPrimary = this.normalizeModelName(settings.textModel || 'gemini-3.7-flash');
+    const normalizedPrimary = this.normalizeModelName(settings.textModel || 'gemini-3.5-flash-lite');
     if (onProgress) {
       onProgress({ step: 1, text: `🤖 Conectando con Google AI Studio (${normalizedPrimary})...` });
     }
@@ -386,10 +386,10 @@ REGLAS ESTRICTAS:
 
     const modelsToTry = [
       normalizedPrimary,
-      'gemini-3.7-flash',
-      'gemini-3.6-flash',
-      'gemini-3.1-flash-lite',
       'gemini-3.5-flash-lite',
+      'gemini-3.7-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-3.6-flash',
       'gemini-flash-lite-latest'
     ];
     const uniqueModels = [...new Set(modelsToTry)];

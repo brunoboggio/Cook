@@ -591,7 +591,7 @@ window.openAISettingsModal = function() {
 
   const settings = window.aiRecipeGenerator 
     ? window.aiRecipeGenerator.getAISettings() 
-    : { apiKey: localStorage.getItem('fridgeflow_gemini_api_key') || '', textModel: 'gemini-3.7-flash', imageModel: 'nano-banana-2' };
+    : { apiKey: localStorage.getItem('fridgeflow_gemini_api_key') || '', textModel: 'gemini-3.5-flash-lite', imageModel: 'nano-banana-2' };
 
   const hasKey = Boolean(settings.apiKey && settings.apiKey.trim().length > 10);
 
@@ -645,10 +645,10 @@ window.openAISettingsModal = function() {
             🧠 Modelo de Texto y Lógica de Receta:
           </label>
           <select id="ai-settings-text-model" class="form-control">
-            <option value="gemini-3.7-flash" ${settings.textModel === 'gemini-3.7-flash' || settings.textModel === 'gemini-3.7-flash-light' ? 'selected' : ''}>⚡ gemini-3.7-flash (Principal · Razonamiento Culinario)</option>
-            <option value="gemini-3.5-flash-lite" ${settings.textModel === 'gemini-3.5-flash-lite' ? 'selected' : ''}>⚡ gemini-3.5-flash-lite (Flash Lite · Ultrarrápido)</option>
+            <option value="gemini-3.5-flash-lite" ${settings.textModel === 'gemini-3.5-flash-lite' || !settings.textModel ? 'selected' : ''}>⚡ gemini-3.5-flash-lite (Por Defecto · Ultrarrápido & Económico)</option>
+            <option value="gemini-3.7-flash" ${settings.textModel === 'gemini-3.7-flash' || settings.textModel === 'gemini-3.7-flash-light' ? 'selected' : ''}>🌟 gemini-3.7-flash (Alta Capacidad · Razonamiento Culinario)</option>
             <option value="gemini-3.1-flash-lite" ${settings.textModel === 'gemini-3.1-flash-lite' ? 'selected' : ''}>✨ gemini-3.1-flash-lite (Flash Lite de Alta Eficiencia)</option>
-            <option value="gemini-3.6-flash" ${settings.textModel === 'gemini-3.6-flash' ? 'selected' : ''}>🌟 gemini-3.6-flash (Estándar Google AI Studio)</option>
+            <option value="gemini-3.6-flash" ${settings.textModel === 'gemini-3.6-flash' ? 'selected' : ''}>🚀 gemini-3.6-flash (Estándar Google AI Studio)</option>
           </select>
         </div>
 
@@ -726,7 +726,7 @@ window.testGeminiConnectionFromModal = async function() {
   try {
     const res = await window.aiRecipeGenerator.testGeminiConnection(
       apiKeyInput.value.trim(),
-      textModelInput ? textModelInput.value : 'gemini-3.7-flash'
+      textModelInput ? textModelInput.value : 'gemini-3.5-flash-lite'
     );
     if (textModelInput && res.modelUsed) {
       // Find if option exists or add it
@@ -767,7 +767,7 @@ window.testGeminiConnectionFromModal = async function() {
 window.saveAISettingsFromModal = function(e) {
   if (e) e.preventDefault();
   const apiKey = document.getElementById('ai-settings-api-key')?.value.trim() || '';
-  const textModel = document.getElementById('ai-settings-text-model')?.value || 'gemini-3.7-flash';
+  const textModel = document.getElementById('ai-settings-text-model')?.value || 'gemini-3.5-flash-lite';
   const imageModel = document.getElementById('ai-settings-image-model')?.value || 'nano-banana-2';
 
   const settings = { apiKey, textModel, imageModel };
