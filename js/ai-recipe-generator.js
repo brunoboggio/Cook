@@ -133,6 +133,32 @@ class AIRecipeGenerator {
     return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
   }
 
+  // --- Discover Available Models for API Key ---
+  async fetchAvailableModels(apiKey) {
+    if (!apiKey || !apiKey.trim()) return [];
+    const key = apiKey.trim();
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`;
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': key
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.models && Array.isArray(data.models)) {
+          return data.models
+            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+            .map(m => m.name.replace(/^models\//, ''));
+        }
+      }
+    } catch (e) {
+      console.warn('No se pudo listar modelos dinámicamente:', e);
+    }
+    return ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'];
+  }
+
   // --- Google AI Studio Test Connection Ping ---
   async testGeminiConnection(apiKey, model = 'gemini-3.7-flash') {
     if (!apiKey || !apiKey.trim()) {
@@ -141,8 +167,13 @@ class AIRecipeGenerator {
 
     const key = apiKey.trim();
     const primary = this.normalizeModelName(model || 'gemini-3.7-flash');
+
+    // First attempt to discover dynamic models from user's account
+    const discovered = await this.fetchAvailableModels(key).catch(() => []);
+
     const modelsToTry = [
       primary,
+      ...discovered.filter(m => m.includes('flash') || m.includes('pro')),
       'gemini-3.7-flash',
       'gemini-3.6-flash',
       'gemini-3.1-flash-lite',
@@ -156,7 +187,10 @@ class AIRecipeGenerator {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${key}`;
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': key
+          },
           body: JSON.stringify({
             contents: [
               {
@@ -172,7 +206,7 @@ class AIRecipeGenerator {
 
         if (response.ok) {
           const data = await response.json();
-          return { success: true, modelUsed: testModel, data };
+          return { success: true, modelUsed: testModel, data, availableCount: discovered.length };
         } else {
           const errData = await response.json().catch(() => ({}));
           lastError = errData?.error?.message || `HTTP ${response.status} (${response.statusText})`;
@@ -369,7 +403,10 @@ REGLAS ESTRICTAS:
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey
+          },
           body: JSON.stringify({
             contents: [{ parts }],
             generationConfig: {

@@ -728,11 +728,30 @@ window.testGeminiConnectionFromModal = async function() {
       apiKeyInput.value.trim(),
       textModelInput ? textModelInput.value : 'gemini-3.7-flash'
     );
+    if (textModelInput && res.modelUsed) {
+      // Find if option exists or add it
+      let found = false;
+      for (let i = 0; i < textModelInput.options.length; i++) {
+        if (textModelInput.options[i].value === res.modelUsed) {
+          textModelInput.selectedIndex = i;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        const opt = document.createElement('option');
+        opt.value = res.modelUsed;
+        opt.textContent = `⚡ ${res.modelUsed} (Activo)`;
+        opt.selected = true;
+        textModelInput.appendChild(opt);
+      }
+    }
     if (msgBox) {
       msgBox.style.background = 'rgba(16, 185, 129, 0.2)';
       msgBox.style.color = '#34D399';
       msgBox.style.border = '1px solid #10B981';
-      msgBox.innerHTML = `✅ <strong>¡Conexión Exitosa!</strong> Google AI Studio respondió correctamente con modelo: <code>${res.modelUsed}</code>.`;
+      const modelsNote = res.availableCount ? ` (${res.availableCount} modelos disponibles en tu cuenta)` : '';
+      msgBox.innerHTML = `✅ <strong>¡Conexión Exitosa!</strong> Google AI Studio respondió correctamente con modelo: <code>${res.modelUsed}</code>${modelsNote}.`;
     }
     if (window.soundFX) window.soundFX.playFanfare();
   } catch (err) {
