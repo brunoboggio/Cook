@@ -252,11 +252,16 @@ function renderRecipes() {
               <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">
                 ${recipe.category === 'desayuno' ? '☀️ Desayuno' : (recipe.category === 'cena' ? '🌙 Cena' : '🍲 Almuerzo')}
               </span>
-              ${recipe.isCustom ? `
-                <button onclick="event.stopPropagation(); deleteCustomRecipe('${recipe.id}')" class="btn-icon" style="color: var(--accent-coral); font-size: 0.8rem; padding: 0.2rem 0.4rem;" title="Eliminar receta">
-                  🗑️
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                <button onclick="event.stopPropagation(); openEditRecipeModal('${recipe.id}')" class="btn-icon" style="color: var(--accent-sky); font-size: 0.85rem; padding: 0.2rem 0.4rem;" title="Editar receta a mano">
+                  ✏️
                 </button>
-              ` : ''}
+                ${recipe.isCustom ? `
+                  <button onclick="event.stopPropagation(); deleteRecipeConfirm('${recipe.id}')" class="btn-icon" style="color: var(--accent-coral); font-size: 0.8rem; padding: 0.2rem 0.4rem;" title="Eliminar receta">
+                    🗑️
+                  </button>
+                ` : ''}
+              </div>
             </div>
 
             <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.25; color: #FFF;">${recipe.title}</h3>
@@ -303,7 +308,19 @@ window.openRecipeModal = function(recipeId) {
       <!-- Modal Header Banner -->
       <div style="position: relative; width: 100%; height: 260px; background: #000;">
         <img src="${recipe.image}" onerror="this.onerror=null; this.src='${window.aiRecipeGenerator?.getFallbackImage(recipe.title) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}'" alt="${recipe.title}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" />
-        <button class="btn-icon modal-close" onclick="closeRecipeModal()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.6); color: #FFF; border: none;">✕</button>
+        
+        <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+          <button class="btn btn-sm" onclick="openEditRecipeModal('${recipe.id}')" style="background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; font-size: 0.8rem; padding: 0.35rem 0.75rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Editar receta a mano">
+            ✏️ Editar
+          </button>
+          ${recipe.isCustom ? `
+            <button class="btn-icon" onclick="deleteRecipeConfirm('${recipe.id}')" style="background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.5); color: #EF4444; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Eliminar receta">
+              🗑️
+            </button>
+          ` : ''}
+          <button class="btn-icon modal-close" onclick="closeRecipeModal()" style="position: static; background: rgba(0,0,0,0.6); color: #FFF; border: none; width: 34px; height: 34px; border-radius: 50%;">✕</button>
+        </div>
+
         <div style="position: absolute; bottom: 1.25rem; left: 1.5rem; right: 1.5rem;">
           <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
             <span class="badge badge-emerald">💪 ${recipe.protein}g Proteína</span>
@@ -363,8 +380,11 @@ window.openRecipeModal = function(recipeId) {
       </div>
 
       <!-- Modal Footer Launch Action -->
-      <div style="padding: 1.25rem 2rem; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
-        <button class="btn btn-secondary" onclick="addToMealPlannerQuick('${recipe.id}')">📅 Asignar al Planificador</button>
+      <div style="padding: 1.25rem 2rem; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="addToMealPlannerQuick('${recipe.id}')">📅 Al Menú</button>
+          <button class="btn btn-ghost" onclick="openEditRecipeModal('${recipe.id}')">✏️ Editar a Mano</button>
+        </div>
         <a href="cook.html?recipe=${recipe.id}" class="btn btn-primary btn-lg">
           🍳 Iniciar Modo Cocina HUD →
         </a>
@@ -730,7 +750,10 @@ function renderAIPreview(recipe) {
 
       <!-- Action Buttons -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
-        <button class="btn btn-ghost btn-sm" onclick="openAICreatorModal()">🔄 Crear Otra</button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="openAICreatorModal()">🔄 Crear Otra</button>
+          <button class="btn btn-secondary btn-sm" onclick="openEditRecipeModal(tempGeneratedRecipe, true)" title="Ajustar ingredientes o tiempos antes de guardar">✏️ Ajustar a Mano</button>
+        </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
           <button class="btn btn-secondary" onclick="saveAndAssignToPlanner()">📅 Asignar al Menú</button>
           <button id="btn-save-ai-recipe-main" class="btn btn-primary btn-lg" onclick="saveAndCloseAICreator()" style="box-shadow: 0 0 20px var(--accent-emerald-glow);">
@@ -830,10 +853,591 @@ window.saveAndAssignToPlanner = async function() {
 };
 
 window.deleteCustomRecipe = function(recipeId) {
-  if (confirm('¿Estás seguro de que quieres eliminar esta receta personalizada?')) {
+  window.deleteRecipeConfirm(recipeId);
+};
+
+window.deleteRecipeConfirm = function(recipeId) {
+  if (confirm('¿Estás seguro de que quieres eliminar esta receta personalizada de tu catálogo? Esta acción no se puede deshacer.')) {
     fridgeStore.deleteCustomRecipe(recipeId);
-    if (window.soundFX) window.soundFX.playClick();
-    window.showToast('Receta eliminada del catálogo', 'amber');
+    window.closeRecipeModal();
+    window.closeEditRecipeModal();
+    if (window.soundFX) window.soundFX.playPop();
+    window.showToast('🗑️ Receta eliminada de tu catálogo', 'amber');
     renderRecipes();
   }
 };
+
+// ==========================================================================
+// 5. MANUAL RECIPE EDITOR MODAL CONTROLLER
+// ==========================================================================
+
+let currentEditingRecipe = null;
+let isEditingFromAICreator = false;
+
+window.openEditRecipeModal = function(recipeOrId, fromAICreator = false) {
+  isEditingFromAICreator = fromAICreator;
+  
+  let recipe = null;
+  if (typeof recipeOrId === 'object' && recipeOrId !== null) {
+    recipe = recipeOrId;
+  } else {
+    const allRecipes = (window.FridgeData && Array.isArray(window.FridgeData.recipes)) ? window.FridgeData.recipes : [];
+    recipe = allRecipes.find(r => r.id === recipeOrId);
+  }
+  
+  if (!recipe) {
+    window.showToast('No se encontró la receta para editar', 'coral');
+    return;
+  }
+
+  // Deep clone to isolate mutations until explicitly saved
+  currentEditingRecipe = JSON.parse(JSON.stringify(recipe));
+  if (!Array.isArray(currentEditingRecipe.ingredients)) currentEditingRecipe.ingredients = [];
+  if (!Array.isArray(currentEditingRecipe.steps)) currentEditingRecipe.steps = [];
+
+  let modal = document.getElementById('recipe-editor-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'recipe-editor-modal';
+    modal.className = 'modal-backdrop';
+    document.body.appendChild(modal);
+  }
+
+  renderEditRecipeModalContent();
+  modal.classList.add('active');
+  if (window.soundFX) window.soundFX.playClick();
+};
+
+window.closeEditRecipeModal = function() {
+  const modal = document.getElementById('recipe-editor-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+function renderEditRecipeModalContent() {
+  const modal = document.getElementById('recipe-editor-modal');
+  if (!modal || !currentEditingRecipe) return;
+
+  const r = currentEditingRecipe;
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 860px; max-height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.35); background: linear-gradient(155deg, rgba(24, 29, 38, 0.98) 0%, rgba(13, 17, 23, 0.99) 100%);">
+      
+      <!-- Modal Header -->
+      <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.6rem;">✏️</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: #FFF;">Editar Receta a Mano</h3>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">
+              Ajusta ingredientes, temporizadores, macros y detalles a tu gusto
+            </div>
+          </div>
+        </div>
+        <button class="btn-icon modal-close" onclick="closeEditRecipeModal()" style="background: rgba(0,0,0,0.5); color: #FFF; border: 1px solid rgba(255,255,255,0.1); width: 34px; height: 34px; border-radius: 50%;">✕</button>
+      </div>
+
+      <!-- Modal Body Form (Scrollable) -->
+      <div style="padding: 1.75rem 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.75rem; flex: 1;">
+        
+        <!-- SECTION 1: General Info -->
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📌</span> Datos Principales del Plato
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Nombre de la Receta *</label>
+              <input type="text" id="edit-recipe-title" class="input-field" value="${escapeHtml(r.title || '')}" style="width: 100%; font-weight: 700; font-size: 1.05rem;" placeholder="Ej: Pollo al Romero con Puré">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Categoría de Comida</label>
+              <select id="edit-recipe-category" class="input-field" style="width: 100%;">
+                <option value="almuerzo" ${r.category === 'almuerzo' ? 'selected' : ''}>🍲 Almuerzo</option>
+                <option value="cena" ${r.category === 'cena' ? 'selected' : ''}>🌙 Cena</option>
+                <option value="desayuno" ${r.category === 'desayuno' ? 'selected' : ''}>☀️ Desayuno</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Subtítulo Apetecible</label>
+            <input type="text" id="edit-recipe-subtitle" class="input-field" value="${escapeHtml(r.subtitle || '')}" style="width: 100%; font-size: 0.9rem;" placeholder="Ej: Plato fitness rico en proteínas y bajo en grasas">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem;">Descripción Culinaria & Nutricional</label>
+            <textarea id="edit-recipe-desc" class="input-field" rows="3" style="width: 100%; font-size: 0.88rem; line-height: 1.5;" placeholder="Descripción del sabor, texturas y beneficios nutricionales...">${escapeHtml(r.description || '')}</textarea>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Times & Parameters -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.25rem;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>⏱️</span> Tiempos y Raciones
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Prep (min)</label>
+              <input type="number" id="edit-recipe-preptime" class="input-field" min="0" value="${r.prepTime || 10}" style="width: 100%; font-family: var(--font-mono); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Cocción (min)</label>
+              <input type="number" id="edit-recipe-cooktime" class="input-field" min="0" value="${r.cookTime || 15}" style="width: 100%; font-family: var(--font-mono); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Raciones</label>
+              <input type="number" id="edit-recipe-servings" class="input-field" min="1" max="20" value="${r.servings || 1}" style="width: 100%; font-family: var(--font-mono); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Dificultad</label>
+              <select id="edit-recipe-difficulty" class="input-field" style="width: 100%;">
+                <option value="Fácil" ${r.difficulty === 'Fácil' ? 'selected' : ''}>Fácil</option>
+                <option value="Intermedia" ${r.difficulty === 'Intermedia' ? 'selected' : ''}>Intermedia</option>
+                <option value="Avanzada" ${r.difficulty === 'Avanzada' ? 'selected' : ''}>Avanzada</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Macros & Nutritional Engine -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-sky); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem;">
+              <span>💪</span> Macronutrientes y Calorías
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="recalculateEditMacros()" style="font-size: 0.75rem; padding: 0.25rem 0.65rem; border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent-sky);" title="Calcular automáticamente las calorías y macros basándose en los ingredientes listados abajo">
+              🧮 Auto-calcular con Ingredientes
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.65rem; text-align: center;">
+            <div>
+              <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Calorías (kcal)</label>
+              <input type="number" id="edit-recipe-calories" class="input-field" min="0" value="${r.calories || 0}" style="width: 100%; font-family: var(--font-mono); font-weight: 800; color: var(--accent-amber); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Proteína (g)</label>
+              <input type="number" id="edit-recipe-protein" class="input-field" min="0" value="${r.protein || 0}" style="width: 100%; font-family: var(--font-mono); font-weight: 800; color: var(--accent-emerald); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Carbos (g)</label>
+              <input type="number" id="edit-recipe-carbs" class="input-field" min="0" value="${r.carbs || 0}" style="width: 100%; font-family: var(--font-mono); font-weight: 800; color: var(--accent-sky); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Grasas (g)</label>
+              <input type="number" id="edit-recipe-fat" class="input-field" min="0" value="${r.fat || 0}" style="width: 100%; font-family: var(--font-mono); font-weight: 800; color: var(--accent-violet); text-align: center;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.35rem;">Fibra (g)</label>
+              <input type="number" id="edit-recipe-fiber" class="input-field" min="0" value="${r.fiber || 0}" style="width: 100%; font-family: var(--font-mono); font-weight: 800; color: var(--text-primary); text-align: center;">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: Dish Image Management -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.25rem;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-violet); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📸</span> Fotografía del Plato
+          </div>
+
+          <div style="display: flex; gap: 1.25rem; align-items: center;">
+            <div style="position: relative; flex-shrink: 0; width: 110px; height: 110px; border-radius: 16px; overflow: hidden; border: 2px solid var(--border-strong); background: #000;">
+              <img id="edit-recipe-img-preview" src="${r.image}" onerror="this.onerror=null; this.src='${window.aiRecipeGenerator?.getFallbackImage(r.title) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}'" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 0.6rem;">
+              <div>
+                <label style="display: block; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 0.3rem;">URL de Imagen o Foto</label>
+                <input type="text" id="edit-recipe-img-url" class="input-field" value="${escapeHtml(r.image || '')}" style="width: 100%; font-size: 0.82rem; font-family: var(--font-mono);" placeholder="https://..." oninput="updateEditImgPreview(this.value)">
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="regenerateEditPhoto()" style="font-size: 0.78rem;">
+                  🎨 Generar con Nano Banana 2
+                </button>
+                <label class="btn btn-ghost btn-sm" style="cursor: pointer; font-size: 0.78rem; border: 1px solid var(--border-subtle);">
+                  📁 Subir Foto Propia
+                  <input type="file" accept="image/*" style="display: none;" onchange="handleEditPhotoUpload(event)">
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: Dynamic Ingredients List -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛒</span> Ingredientes Requeridos (<span id="edit-ing-count">${r.ingredients.length}</span>)
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addEditIngredientRow()" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+              ➕ Agregar Ingrediente
+            </button>
+          </div>
+
+          <div id="edit-ingredients-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            ${r.ingredients.map((ing, idx) => `
+              <div class="edit-ing-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap: 0.5rem; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.65rem 0.85rem; border-radius: 12px;">
+                <input type="text" class="edit-ing-name input-field" value="${escapeHtml(ing.name || '')}" placeholder="Nombre del ingrediente" style="font-size: 0.88rem;">
+                <input type="text" class="edit-ing-amount input-field" value="${escapeHtml(String(ing.amount || ''))}" placeholder="Cant." style="font-size: 0.88rem; text-align: center;">
+                <input type="text" class="edit-ing-unit input-field" value="${escapeHtml(ing.unit || 'g')}" placeholder="Unidad" style="font-size: 0.88rem; text-align: center;">
+                <label style="display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--text-secondary); cursor: pointer; white-space: nowrap;">
+                  <input type="checkbox" class="edit-ing-protein" ${ing.isMainProtein ? 'checked' : ''}> Proteína
+                </label>
+                <button type="button" class="btn-icon" onclick="removeEditIngredientRow(this)" style="color: var(--accent-coral); font-size: 0.9rem;" title="Eliminar ingrediente">🗑️</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- SECTION 6: Dynamic Cooking Steps & Timers -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem;">
+              <span>👨‍🍳</span> Pasos de Preparación y Cronómetros (<span id="edit-steps-count">${r.steps.length}</span>)
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addEditStepRow()" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+              ➕ Agregar Paso
+            </button>
+          </div>
+
+          <div id="edit-steps-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            ${r.steps.map((s, idx) => {
+              const minutes = s.timerSeconds ? Math.round(s.timerSeconds / 60) : 0;
+              return `
+                <div class="edit-step-row" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: 14px; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="badge badge-emerald" style="font-weight: 800; font-size: 0.75rem;">Paso <span class="step-num-display">${s.step || (idx + 1)}</span></span>
+                    <button type="button" class="btn-icon" onclick="removeEditStepRow(this)" style="color: var(--accent-coral); font-size: 0.9rem;" title="Eliminar paso">🗑️ Eliminar</button>
+                  </div>
+                  <textarea class="edit-step-instruction input-field" rows="2" style="width: 100%; font-size: 0.88rem; line-height: 1.45;" placeholder="Instrucción detallada de cocción o preparación...">${escapeHtml(s.instruction || '')}</textarea>
+                  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.6rem; align-items: center;">
+                    <div>
+                      <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.25rem;">⏱️ Minutos de Cronómetro (0 = sin tiempo)</label>
+                      <input type="number" class="edit-step-timer input-field" min="0" max="240" value="${minutes}" style="width: 100%; font-family: var(--font-mono); font-size: 0.85rem; text-align: center;">
+                    </div>
+                    <div>
+                      <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.25rem;">💡 Consejo del Chef (opcional)</label>
+                      <input type="text" class="edit-step-tip input-field" value="${escapeHtml(s.tip || '')}" placeholder="Ej: Fuego medio-alto para sellar jugos" style="width: 100%; font-size: 0.85rem;">
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); flex-wrap: wrap; gap: 0.75rem;">
+        <button type="button" class="btn btn-ghost" onclick="closeEditRecipeModal()">Cancelar</button>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          ${r.isCustom && !isEditingFromAICreator ? `
+            <button type="button" class="btn btn-danger" onclick="deleteRecipeConfirm('${r.id}')" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #EF4444;">
+              🗑️ Eliminar
+            </button>
+          ` : ''}
+          <button type="button" class="btn btn-primary btn-lg" onclick="saveEditedRecipe()" style="box-shadow: 0 0 20px var(--accent-emerald-glow); font-weight: 700;">
+            💾 Guardar Cambios
+          </button>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+window.updateEditImgPreview = function(url) {
+  const img = document.getElementById('edit-recipe-img-preview');
+  if (img && url) {
+    img.src = url;
+  }
+};
+
+window.regenerateEditPhoto = function() {
+  const title = document.getElementById('edit-recipe-title')?.value.trim() || currentEditingRecipe?.title || 'Plato Gourmet';
+  const newSeed = Math.floor(Math.random() * 999999);
+  const newUrl = window.aiRecipeGenerator.generateAIImageUrl(title, null, newSeed);
+  
+  const urlInput = document.getElementById('edit-recipe-img-url');
+  if (urlInput) urlInput.value = newUrl;
+  
+  const imgEl = document.getElementById('edit-recipe-img-preview');
+  if (imgEl) {
+    imgEl.src = newUrl;
+    imgEl.style.animation = 'pulseAmber 0.8s ease';
+    setTimeout(() => { imgEl.style.animation = ''; }, 800);
+  }
+  if (window.showToast) window.showToast('🎨 Nueva toma con Nano Banana 2 lista', 'sky');
+};
+
+window.handleEditPhotoUpload = function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    window.showToast('Por favor selecciona una imagen válida', 'amber');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const dataUrl = event.target.result;
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      const maxDim = 1000;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+      const urlInput = document.getElementById('edit-recipe-img-url');
+      if (urlInput) urlInput.value = optimizedDataUrl;
+
+      const imgEl = document.getElementById('edit-recipe-img-preview');
+      if (imgEl) imgEl.src = optimizedDataUrl;
+
+      window.showToast('📸 Foto personalizada cargada con éxito', 'emerald');
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.addEditIngredientRow = function(name = '', amount = '', unit = 'g', isMainProtein = false) {
+  const container = document.getElementById('edit-ingredients-container');
+  if (!container) return;
+
+  const div = document.createElement('div');
+  div.className = 'edit-ing-row';
+  div.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap: 0.5rem; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.65rem 0.85rem; border-radius: 12px; animation: fadeIn 0.3s ease;';
+  div.innerHTML = `
+    <input type="text" class="edit-ing-name input-field" value="${escapeHtml(name)}" placeholder="Nombre del ingrediente" style="font-size: 0.88rem;">
+    <input type="text" class="edit-ing-amount input-field" value="${escapeHtml(String(amount))}" placeholder="Cant." style="font-size: 0.88rem; text-align: center;">
+    <input type="text" class="edit-ing-unit input-field" value="${escapeHtml(unit)}" placeholder="Unidad" style="font-size: 0.88rem; text-align: center;">
+    <label style="display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--text-secondary); cursor: pointer; white-space: nowrap;">
+      <input type="checkbox" class="edit-ing-protein" ${isMainProtein ? 'checked' : ''}> Proteína
+    </label>
+    <button type="button" class="btn-icon" onclick="removeEditIngredientRow(this)" style="color: var(--accent-coral); font-size: 0.9rem;" title="Eliminar ingrediente">🗑️</button>
+  `;
+  container.appendChild(div);
+  updateEditCounts();
+};
+
+window.removeEditIngredientRow = function(btn) {
+  const row = btn.closest('.edit-ing-row');
+  if (row) {
+    row.remove();
+    updateEditCounts();
+  }
+};
+
+window.addEditStepRow = function(instruction = '', timerMinutes = 0, tip = '') {
+  const container = document.getElementById('edit-steps-container');
+  if (!container) return;
+
+  const count = container.querySelectorAll('.edit-step-row').length + 1;
+  const div = document.createElement('div');
+  div.className = 'edit-step-row';
+  div.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: 14px; display: flex; flex-direction: column; gap: 0.6rem; animation: fadeIn 0.3s ease;';
+  div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span class="badge badge-emerald" style="font-weight: 800; font-size: 0.75rem;">Paso <span class="step-num-display">${count}</span></span>
+      <button type="button" class="btn-icon" onclick="removeEditStepRow(this)" style="color: var(--accent-coral); font-size: 0.9rem;" title="Eliminar paso">🗑️ Eliminar</button>
+    </div>
+    <textarea class="edit-step-instruction input-field" rows="2" style="width: 100%; font-size: 0.88rem; line-height: 1.45;" placeholder="Instrucción detallada de cocción o preparación...">${escapeHtml(instruction)}</textarea>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.6rem; align-items: center;">
+      <div>
+        <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.25rem;">⏱️ Minutos de Cronómetro</label>
+        <input type="number" class="edit-step-timer input-field" min="0" max="240" value="${timerMinutes}" style="width: 100%; font-family: var(--font-mono); font-size: 0.85rem; text-align: center;">
+      </div>
+      <div>
+        <label style="display: block; font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.25rem;">💡 Consejo del Chef (opcional)</label>
+        <input type="text" class="edit-step-tip input-field" value="${escapeHtml(tip)}" placeholder="Ej: Mantener tapado para conservar aromas" style="width: 100%; font-size: 0.85rem;">
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  updateEditCounts();
+};
+
+window.removeEditStepRow = function(btn) {
+  const row = btn.closest('.edit-step-row');
+  if (row) {
+    row.remove();
+    updateEditCounts();
+  }
+};
+
+function updateEditCounts() {
+  const ingCount = document.querySelectorAll('.edit-ing-row').length;
+  const ingCountEl = document.getElementById('edit-ing-count');
+  if (ingCountEl) ingCountEl.textContent = ingCount;
+
+  const stepRows = document.querySelectorAll('.edit-step-row');
+  const stepCountEl = document.getElementById('edit-steps-count');
+  if (stepCountEl) stepCountEl.textContent = stepRows.length;
+
+  stepRows.forEach((row, idx) => {
+    const numDisplay = row.querySelector('.step-num-display');
+    if (numDisplay) numDisplay.textContent = (idx + 1);
+  });
+}
+
+window.recalculateEditMacros = function() {
+  if (!window.aiRecipeGenerator) return;
+
+  const ingRows = document.querySelectorAll('.edit-ing-row');
+  const ingredients = [];
+  ingRows.forEach((row, idx) => {
+    const name = row.querySelector('.edit-ing-name')?.value.trim();
+    const amount = row.querySelector('.edit-ing-amount')?.value.trim();
+    const unit = row.querySelector('.edit-ing-unit')?.value.trim() || 'g';
+    const isMainProtein = row.querySelector('.edit-ing-protein')?.checked || false;
+    if (name) {
+      ingredients.push({
+        id: 'ing_' + idx,
+        name,
+        amount: amount || '100',
+        unit,
+        isMainProtein
+      });
+    }
+  });
+
+  if (ingredients.length === 0) {
+    window.showToast('Agrega al menos un ingrediente para calcular los macros', 'amber');
+    return;
+  }
+
+  const focus = (currentEditingRecipe && currentEditingRecipe.category === 'desayuno') ? 'breakfast' : 'high_protein';
+  const calculated = window.aiRecipeGenerator.calculateMacros(ingredients, focus);
+
+  const calInput = document.getElementById('edit-recipe-calories');
+  const protInput = document.getElementById('edit-recipe-protein');
+  const carbsInput = document.getElementById('edit-recipe-carbs');
+  const fatInput = document.getElementById('edit-recipe-fat');
+  const fibInput = document.getElementById('edit-recipe-fiber');
+
+  if (calInput) calInput.value = calculated.calories;
+  if (protInput) protInput.value = calculated.protein;
+  if (carbsInput) carbsInput.value = calculated.carbs;
+  if (fatInput) fatInput.value = calculated.fat;
+  if (fibInput) fibInput.value = calculated.fiber;
+
+  if (window.soundFX) window.soundFX.playCoin();
+  window.showToast(`🧮 Macros recalculados: ${calculated.protein}g proteína · ${calculated.calories} kcal`, 'sky');
+};
+
+window.saveEditedRecipe = async function() {
+  if (!currentEditingRecipe) return;
+
+  const titleInput = document.getElementById('edit-recipe-title');
+  const title = titleInput ? titleInput.value.trim() : '';
+  if (!title) {
+    window.showToast('El título de la receta es obligatorio', 'amber');
+    if (titleInput) titleInput.focus();
+    return;
+  }
+
+  // Collect ingredients
+  const ingRows = document.querySelectorAll('.edit-ing-row');
+  const ingredients = [];
+  ingRows.forEach((row, idx) => {
+    const name = row.querySelector('.edit-ing-name')?.value.trim();
+    const amount = row.querySelector('.edit-ing-amount')?.value.trim();
+    const unit = row.querySelector('.edit-ing-unit')?.value.trim() || 'g';
+    const isMainProtein = row.querySelector('.edit-ing-protein')?.checked || false;
+    if (name) {
+      ingredients.push({
+        id: 'ing_' + idx + '_' + Math.floor(Math.random() * 1000),
+        name,
+        amount: amount || '1',
+        unit,
+        isMainProtein
+      });
+    }
+  });
+
+  // Collect steps
+  const stepRows = document.querySelectorAll('.edit-step-row');
+  const steps = [];
+  stepRows.forEach((row, idx) => {
+    const instruction = row.querySelector('.edit-step-instruction')?.value.trim();
+    const timerMinutes = parseFloat(row.querySelector('.edit-step-timer')?.value) || 0;
+    const tip = row.querySelector('.edit-step-tip')?.value.trim() || '';
+    if (instruction) {
+      steps.push({
+        step: idx + 1,
+        instruction,
+        timerSeconds: Math.round(timerMinutes * 60),
+        tip: tip,
+        equipment: []
+      });
+    }
+  });
+
+  // Apply edits to currentEditingRecipe
+  currentEditingRecipe.title = title;
+  currentEditingRecipe.subtitle = document.getElementById('edit-recipe-subtitle')?.value.trim() || '';
+  currentEditingRecipe.description = document.getElementById('edit-recipe-desc')?.value.trim() || '';
+  currentEditingRecipe.category = document.getElementById('edit-recipe-category')?.value || 'almuerzo';
+  currentEditingRecipe.difficulty = document.getElementById('edit-recipe-difficulty')?.value || 'Fácil';
+  currentEditingRecipe.servings = parseInt(document.getElementById('edit-recipe-servings')?.value, 10) || 1;
+  currentEditingRecipe.prepTime = parseInt(document.getElementById('edit-recipe-preptime')?.value, 10) || 10;
+  currentEditingRecipe.cookTime = parseInt(document.getElementById('edit-recipe-cooktime')?.value, 10) || 15;
+  currentEditingRecipe.calories = parseInt(document.getElementById('edit-recipe-calories')?.value, 10) || 0;
+  currentEditingRecipe.protein = parseInt(document.getElementById('edit-recipe-protein')?.value, 10) || 0;
+  currentEditingRecipe.carbs = parseInt(document.getElementById('edit-recipe-carbs')?.value, 10) || 0;
+  currentEditingRecipe.fat = parseInt(document.getElementById('edit-recipe-fat')?.value, 10) || 0;
+  currentEditingRecipe.fiber = parseInt(document.getElementById('edit-recipe-fiber')?.value, 10) || 0;
+  currentEditingRecipe.image = document.getElementById('edit-recipe-img-url')?.value.trim() || currentEditingRecipe.image;
+  currentEditingRecipe.ingredients = ingredients;
+  currentEditingRecipe.steps = steps;
+  currentEditingRecipe.isCustom = true;
+  currentEditingRecipe.updatedAt = new Date().toISOString();
+
+  if (isEditingFromAICreator) {
+    tempGeneratedRecipe = currentEditingRecipe;
+    renderAIPreview(tempGeneratedRecipe);
+    closeEditRecipeModal();
+    if (window.soundFX) window.soundFX.playClick();
+    window.showToast('✏️ Ajustes aplicados a la vista previa de la receta', 'emerald');
+    return;
+  }
+
+  // Save to persistent storage & sync Firestore
+  fridgeStore.saveCustomRecipe(currentEditingRecipe);
+  closeEditRecipeModal();
+  renderRecipes();
+  openRecipeModal(currentEditingRecipe.id);
+
+  if (window.soundFX) window.soundFX.playFanfare();
+  window.showToast(`✨ ¡Receta "${currentEditingRecipe.title}" actualizada y guardada!`, 'emerald');
+};
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
