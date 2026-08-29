@@ -250,12 +250,13 @@ function renderRoadmapTimeline() {
     if (isCompleted) classes += ' completed';
 
     return `
-      <div class="${classes}" onclick="goToStep(${idx})" title="Ir al paso ${idx + 1}">
+      <div class="${classes}" onclick="goToStep(${idx})" title="Ir al paso ${idx + 1}: ${phase}">
         <div class="cook-roadmap-badge">
           ${isCompleted ? '✓' : idx + 1}
         </div>
         <div class="cook-roadmap-text">
-          <strong>${phase}:</strong> ${step.instruction.substring(0, 45)}...
+          <span class="cook-roadmap-phase">${phase}</span>
+          <span class="cook-roadmap-desc">${step.instruction}</span>
         </div>
       </div>
     `;

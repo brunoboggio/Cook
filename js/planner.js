@@ -667,36 +667,36 @@ function renderConsolidatedCart() {
           <span>${catData.title} <span style="font-size: 0.8rem; color: var(--text-tertiary); font-weight: normal;">(${pendingItems.length})</span></span>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 0.75rem;">
+        <div class="cart-items-grid">
           ${pendingItems.map(item => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: ${item.isExcluded ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${item.isExcluded ? 'rgba(255,255,255,0.06)' : 'var(--border-subtle)'}; opacity: ${item.isExcluded ? '0.6' : '1'}; border-radius: 10px; transition: all 0.2s ease;">
+            <div class="cart-item-card ${item.isExcluded ? 'is-excluded' : ''}">
               
-              <label style="display: flex; align-items: center; gap: 0.65rem; cursor: pointer; flex: 1; user-select: none;">
+              <label class="cart-item-check-label">
                 <input type="checkbox" 
                        ${item.isChecked ? 'checked' : ''} 
                        onchange="toggleCartItem('${item.id}', this.checked)" 
-                       style="accent-color: var(--accent-emerald); width: 18px; height: 18px; cursor: pointer;" />
-                <div>
-                  <span style="font-size: 1.1rem; margin-right: 0.25rem;">${item.emoji}</span>
-                  <span style="font-weight: 600; font-size: 0.88rem; color: var(--text-primary);">
-                    ${item.name}
-                  </span>
-                  <div style="font-size: 0.7rem; color: var(--text-tertiary);">
-                    ${item.isExcluded ? '🏠 En despensa (no suma)' : `Para: ${item.usedInRecipes.slice(0, 2).join(', ')}${item.usedInRecipes.length > 2 ? ' +' + (item.usedInRecipes.length - 2) : ''}`}
+                       class="cart-item-checkbox" />
+                <div class="cart-item-content">
+                  <div class="cart-item-title-row">
+                    <span class="cart-item-emoji">${item.emoji}</span>
+                    <span class="cart-item-name">${item.name}</span>
+                  </div>
+                  <div class="cart-item-subtitle">
+                    ${item.isExcluded ? '🏠 En despensa (no suma gasto)' : `Para: ${item.usedInRecipes.slice(0, 2).join(', ')}${item.usedInRecipes.length > 2 ? ' +' + (item.usedInRecipes.length - 2) : ''}`}
                   </div>
                 </div>
               </label>
 
-              <div style="text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 0.2rem;">
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <button class="btn-icon" style="width: 24px; height: 24px; font-size: 0.72rem; border-radius: 6px; background: ${item.isExcluded ? 'rgba(52, 211, 153, 0.2)' : 'rgba(255,255,255,0.05)'}; color: ${item.isExcluded ? '#34D399' : 'var(--text-tertiary)'};" onclick="toggleCartItemExcluded('${item.id}', ${!item.isExcluded})" title="${item.isExcluded ? 'Incluir en presupuesto de compra' : 'Marcar que ya tengo en casa (descontar gasto)'}">
+              <div class="cart-item-pricing">
+                <div class="cart-item-qty-row">
+                  <button class="btn-icon cart-item-pantry-btn" onclick="toggleCartItemExcluded('${item.id}', ${!item.isExcluded})" title="${item.isExcluded ? 'Incluir en presupuesto de compra' : 'Marcar que ya tengo en casa (descontar gasto)'}">
                     ${item.isExcluded ? '🏠' : '🛒'}
                   </button>
-                  <span class="badge badge-muted" style="font-family: var(--font-mono); font-size: 0.72rem;">
+                  <span class="badge badge-muted cart-item-qty-badge">
                     ${item.totalAmount} ${item.unit}
                   </span>
                 </div>
-                <span style="font-size: 0.78rem; font-weight: 700; color: ${item.isExcluded ? 'var(--text-tertiary)' : '#34D399'}; font-family: var(--font-mono); text-decoration: ${item.isExcluded ? 'line-through' : 'none'};">
+                <span class="cart-item-price ${item.isExcluded ? 'is-excluded-price' : ''}">
                   $ ${formatARS(item.estimatedPrice)}
                 </span>
               </div>
@@ -711,21 +711,21 @@ function renderConsolidatedCart() {
   // Collapsible Accordion for Purchased Items (Modo Supermercado)
   if (checkedItemsList.length > 0) {
     html += `
-      <details style="margin-top: 1.5rem; background: rgba(16, 185, 129, 0.05); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 1rem 1.25rem;">
-        <summary style="cursor: pointer; font-weight: 700; color: #34D399; font-size: 0.95rem; user-select: none; display: flex; justify-content: space-between; align-items: center;">
+      <details class="cart-purchased-accordion">
+        <summary class="cart-purchased-summary">
           <span>✓ ${checkedItemsList.length} productos ya comprados en el carrito</span>
           <span style="font-size: 0.78rem; color: var(--text-tertiary); font-weight: normal;">(Clic para ver/desmarcar)</span>
         </summary>
-        <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem;">
+        <div class="cart-purchased-grid">
           ${checkedItemsList.map(item => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px;">
-              <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; flex: 1;">
-                <input type="checkbox" checked onchange="toggleCartItem('${item.id}', this.checked)" style="accent-color: var(--accent-emerald); width: 16px; height: 16px;" />
-                <span style="font-size: 0.88rem; color: var(--text-secondary); text-decoration: line-through;">
+            <div class="cart-purchased-item">
+              <label class="cart-purchased-label">
+                <input type="checkbox" checked onchange="toggleCartItem('${item.id}', this.checked)" class="cart-item-checkbox" />
+                <span class="cart-purchased-name">
                   ${item.emoji} ${item.name} (${item.totalAmount} ${item.unit})
                 </span>
               </label>
-              <span style="font-size: 0.75rem; color: var(--text-tertiary); font-family: var(--font-mono);">$ ${formatARS(item.estimatedPrice)}</span>
+              <span class="cart-purchased-price">$ ${formatARS(item.estimatedPrice)}</span>
             </div>
           `).join('')}
         </div>

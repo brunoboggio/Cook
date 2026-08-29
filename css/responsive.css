@@ -115,13 +115,20 @@
   .navbar-floating {
     width: calc(100% - 1.25rem) !important;
     top: 0.5rem !important;
-    padding: 0.4rem 0.75rem !important;
+    padding: 0.45rem 0.85rem !important;
     border-radius: var(--radius-full) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    box-sizing: border-box !important;
   }
 
   .nav-brand {
     font-size: 1.1rem !important;
     gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+    min-width: 0 !important;
   }
 
   .brand-icon-wrapper {
@@ -129,28 +136,40 @@
     height: 32px !important;
     font-size: 1rem !important;
     border-radius: 10px !important;
+    flex-shrink: 0 !important;
   }
 
   .nav-actions {
-    gap: 0.4rem !important;
+    gap: 0.45rem !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
-  /* Hide non-critical buttons in mobile header (available in drawer) */
+  /* Hide secondary desktop-only actions on mobile navbar (all available in mobile drawer) */
   .nav-actions .audio-toggle-btn,
-  .nav-actions .trigger-backup-modal {
+  .nav-actions .trigger-backup-modal,
+  .nav-actions .trigger-search-modal,
+  .nav-actions .theme-toggle-btn {
     display: none !important;
   }
 
   .nav-actions .btn-icon {
     width: 36px !important;
     height: 36px !important;
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
+    flex-shrink: 0 !important;
   }
 
   .nav-actions a.btn,
   .nav-actions button.btn {
-    padding: 0.4rem 0.75rem !important;
+    padding: 0.38rem 0.75rem !important;
     font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    min-height: 36px !important;
+    border-radius: var(--radius-full) !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   /* Enhanced Mobile Navigation Drawer */
@@ -368,8 +387,40 @@
     gap: 1.25rem !important;
   }
 
+  .cart-items-grid,
   #shopping-cart-container div[style*="minmax(290px, 1fr)"],
   #shopping-cart-container div[style*="minmax(280px, 1fr)"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .cart-item-card {
+    padding: 0.75rem 0.85rem !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cart-item-name {
+    font-size: 0.9rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .cart-item-subtitle {
+    font-size: 0.72rem !important;
+  }
+
+  .cart-item-qty-badge {
+    font-size: 0.72rem !important;
+    padding: 0.18rem 0.45rem !important;
+  }
+
+  .cart-item-price {
+    font-size: 0.84rem !important;
+  }
+
+  .cart-purchased-grid {
     grid-template-columns: 1fr !important;
     gap: 0.5rem !important;
   }
@@ -516,13 +567,24 @@
   .cook-header-inner {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 0.75rem !important;
-    padding: 0.75rem 1rem !important;
+    gap: 0.65rem !important;
+    padding: 0.6rem 0.85rem !important;
   }
 
   .cook-header-left {
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     width: 100% !important;
+    overflow-x: auto !important;
+    gap: 0.4rem !important;
+    padding-bottom: 2px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .cook-header-left .btn-ghost {
+    padding: 0.28rem 0.55rem !important;
+    font-size: 0.76rem !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
   }
 
   .cook-header-center {
@@ -530,50 +592,308 @@
     width: 100% !important;
   }
 
+  .cook-header-title-row {
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .cook-header-thumb {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
   .cook-header-title {
-    max-width: 260px !important;
-    font-size: 1.05rem !important;
+    max-width: calc(100vw - 110px) !important;
+    font-size: 0.98rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .cook-header-meta {
+    font-size: 0.74rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
   }
 
   .cook-header-right {
-    justify-content: space-between !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     width: 100% !important;
-    flex-wrap: wrap !important;
     gap: 0.5rem !important;
+  }
+
+  .cook-view-segmented {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    padding: 3px !important;
+    box-sizing: border-box !important;
+  }
+
+  .cook-view-tab {
+    justify-content: center !important;
+    padding: 0.45rem 0.5rem !important;
+    font-size: 0.8rem !important;
+    text-align: center !important;
+  }
+
+  .cook-audio-tools {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .cook-audio-tools .btn {
+    padding: 0.35rem 0.3rem !important;
+    font-size: 0.74rem !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-height: 36px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .cook-stepper-pills {
     justify-content: flex-start !important;
-    padding: 0.4rem 0.75rem !important;
+    padding: 0.4rem 0.85rem !important;
+    gap: 0.5rem !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .cook-step-pill-btn {
+    padding: 0.28rem 0.65rem !important;
+    font-size: 0.72rem !important;
   }
 
   .cook-main-viewport {
-    padding: 1.25rem 0.75rem 5rem 0.75rem !important;
+    padding: 1rem 0.75rem 5rem 0.75rem !important;
   }
 
   .cook-grid-layout {
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    gap: 1.25rem !important;
   }
 
   .cook-prep-sidebar {
     position: static !important;
     max-height: none !important;
+    padding-right: 0 !important;
+    gap: 1rem !important;
   }
 
-  .cook-instruction-text {
-    font-size: 1.35rem !important;
+  /* Macros Row: Always 4 balanced columns, NEVER clipped */
+  .cook-macros-row {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cook-macro-chip {
+    padding: 0.45rem 0.15rem !important;
+    border-radius: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .cook-macro-label {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.02em !important;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .cook-macro-val {
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Mise en Place Checklist: Amounts never cut off */
+  .cook-checklist-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    padding: 0.55rem 0.65rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cook-check-left {
+    flex: 1 !important;
+    min-width: 0 !important;
+    gap: 0.5rem !important;
+  }
+
+  .cook-check-name {
+    font-size: 0.82rem !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.3 !important;
+  }
+
+  .cook-check-amount {
+    flex-shrink: 0 !important;
+    font-size: 0.74rem !important;
+    padding: 0.15rem 0.4rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Step Master Workstation */
+  .cook-step-master-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 20px !important;
+  }
+
+  .cook-step-master-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .cook-instruction-hero-text {
+    font-size: clamp(1.2rem, 5.2vw, 1.45rem) !important;
+    line-height: 1.35 !important;
+  }
+
+  .cook-step-tip-panel {
+    padding: 0.85rem 1rem !important;
+    gap: 0.65rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .cook-step-tip-content {
+    font-size: 0.88rem !important;
     line-height: 1.4 !important;
   }
 
-  .cook-nav-bar-bottom {
-    flex-direction: column !important;
-    gap: 0.65rem !important;
+  .cook-smart-timer-box {
+    padding: 1.15rem 1rem !important;
+    margin-bottom: 1.5rem !important;
   }
 
-  .cook-nav-bar-bottom .btn {
+  .cook-timer-body {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1.15rem !important;
+  }
+
+  .circular-timer-wrapper {
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  .timer-time-display {
+    font-size: 1.3rem !important;
+  }
+
+  .cook-timer-controls {
     width: 100% !important;
-    min-height: 48px !important;
+    min-width: 0 !important;
+  }
+
+  .cook-timer-adjust-row {
+    justify-content: center !important;
+    gap: 0.3rem !important;
+  }
+
+  .cook-step-navigation-footer {
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+    margin-top: 1.5rem !important;
+    padding-top: 1.25rem !important;
+  }
+
+  .cook-nav-btn,
+  .cook-mark-done-btn {
+    width: 100% !important;
+    min-height: 46px !important;
+    justify-content: center !important;
+  }
+
+  /* Sheet View (Vista Completa) on Mobile */
+  .cook-sheet-wrapper {
+    gap: 1.5rem !important;
+  }
+
+  .cook-sheet-header-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 20px !important;
+  }
+
+  .cook-sheet-header-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .cook-sheet-hero-img {
+    height: 200px !important;
+    border-radius: 16px !important;
+  }
+
+  #sheet-recipe-title {
+    font-size: clamp(1.4rem, 5.5vw, 1.85rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  .cook-sheet-macros-banner {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+  }
+
+  .cook-sheet-macros-banner .badge {
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 0.38rem 0.5rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .cook-sheet-ingredients-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.45rem !important;
+  }
+
+  .cook-sheet-step-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 18px !important;
+  }
+
+  .cook-sheet-step-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.6rem !important;
+  }
+
+  .cook-sheet-step-instruction {
+    font-size: 1.05rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Celebration / Finish Recipe Button: NEVER cut off */
+  .cook-sheet-complete-row {
+    padding-inline: 0 !important;
+    margin-top: 2rem !important;
+    margin-bottom: 3rem !important;
+  }
+
+  .cook-finish-recipe-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0.95rem 1rem !important;
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    border-radius: var(--radius-full) !important;
   }
 
   /* ------------------------------------------------------------------------
@@ -634,7 +954,7 @@
   }
 
   .nav-brand span {
-    font-size: 1rem !important;
+    font-size: 0.98rem !important;
   }
 
   .days-selector-btn {
@@ -662,6 +982,39 @@
   .meal-slot-card a.btn-sm {
     padding: 0.3rem 0.5rem !important;
     font-size: 0.7rem !important;
+  }
+
+  .cook-header-title {
+    max-width: calc(100vw - 85px) !important;
+    font-size: 0.92rem !important;
+  }
+
+  .cook-macros-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem !important;
+  }
+
+  .cook-audio-tools {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.25rem !important;
+  }
+
+  .cook-audio-tools .btn {
+    padding: 0.3rem 0.2rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .cook-finish-recipe-btn {
+    font-size: 0.92rem !important;
+    padding: 0.85rem 0.75rem !important;
+  }
+
+  .cart-item-card {
+    padding: 0.65rem 0.75rem !important;
+  }
+
+  .cart-item-name {
+    font-size: 0.86rem !important;
   }
 }
 
