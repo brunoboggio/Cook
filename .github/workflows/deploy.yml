@@ -1,4 +1,4 @@
-﻿name: 🚀 Deploy Cook to BanaHosting
+name: 🚀 Deploy Cook to BanaHosting
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: cook.liberatueco.com/
+          server-dir: ./
           protocol: ftp
           dangerous-clean-slate: false
           exclude: |
