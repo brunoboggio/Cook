@@ -1,0 +1,5 @@
+﻿---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/qvjatfon/cook.liberatueco.com/
+    - /bin/cp -R * 
