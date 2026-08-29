@@ -1,4 +1,4 @@
-﻿# 🍳 Cook (FridgeFlow) — High-Protein Culinary Intelligence & Kitchen OS
+# 🍳 Cook (FridgeFlow) — High-Protein Culinary Intelligence & Kitchen OS
 
 Una plataforma web interactiva y moderna de **planificación de menús proteicos, generación de recetas con Inteligencia Artificial, gestión de precios en \$ ARS y consolidación inteligente de listas de compras para supermercados**.
 
@@ -55,11 +55,10 @@ Diseñada con estética **Awwwards Obsidian Dark & Linen Light**, 100% responsiv
 
 ---
 
-## 🚀 Despliegue en GitHub Pages
+## 🌐 Producción & Despliegue Continuo (CI/CD)
 
-1. Ve a **Settings** > **Pages** en este repositorio.
-2. En **Build and deployment** > **Branch**, selecciona main y la carpeta / (root).
-3. Haz clic en **Save** y tu aplicación estará disponible en línea en segundos.
+- **URL Oficial**: [http://cook.liberatueco.com/](http://cook.liberatueco.com/)
+- Despliegue automático vía GitHub Actions sincronizado con BanaHosting.
 
 ---
 
