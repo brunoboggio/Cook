@@ -132,14 +132,20 @@ class AIRecipeGenerator {
     const settings = this.getAISettings();
     const cleanSeed = seed || Math.floor(Math.random() * 999999);
     
-    // Clean text and remove accents for URL safety
-    const cleanDish = (dishName || 'Gourmet Culinary Dish')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9 ]/g, ' ')
-      .trim();
+    let culinaryPrompt = '';
+    if (customPrompt && typeof customPrompt === 'string' && customPrompt.trim().length > 15) {
+      const cleanCustom = customPrompt.trim().replace(/["'\n\r]/g, ' ');
+      culinaryPrompt = `Masterpiece commercial food photography of ${cleanCustom}, Michelin star gourmet restaurant plating on artisanal dark ceramic tableware, rich appetizing textures, glistening glossy sauce reduction, fresh micro-herbs garnish, 45 degree angle shot on 90mm macro lens f/2.8, warm cinematic side lighting, soft subtle steam rising, shallow depth of field with creamy bokeh, 8k resolution, ultra-realistic, hyper-detailed, award-winning food styling, no text, no watermark, no humans`;
+    } else {
+      const cleanDish = (dishName || 'Gourmet Culinary Dish')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9 ]/g, ' ')
+        .trim();
 
-    const culinaryPrompt = `delicious gourmet ${cleanDish} restaurant culinary plating, warm studio lighting, 8k food photography`;
+      culinaryPrompt = `Masterpiece commercial food photography of exquisite delicious ${cleanDish}, Michelin star gourmet fine-dining restaurant plating on bespoke dark artisan ceramic dish, sizzling juicy texture, appetizing glossy glaze, vibrant microgreens and edible flowers garnish, 45 degree angle shot on 90mm macro lens f/2.8, warm cinematic studio side-lighting, shallow depth of field with creamy bokeh, 8k UHD resolution, ultra-realistic, highly detailed, mouth-watering presentation, no text, no watermark`;
+    }
+
     const model = settings.imageModel || 'nano-banana-2';
     const cleanPrompt = encodeURIComponent(culinaryPrompt);
     return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
@@ -377,14 +383,15 @@ Debes responder ÚNICAMENTE con un JSON válido que cumpla estrictamente este es
       "equipment": ["Plato de presentación"]
     }
   ],
-  "imagePrompt": "A stunning, hyperrealistic 8k gourmet food photography of ${dishName}, restaurant culinary plating, warm soft lighting, macro detail, award winning food styling"
+  "imagePrompt": "Detailed English food photography prompt: Pan-seared main ingredient with glistening glaze, accompanied by delicious colorful side elements and fresh herb garnishes on a dark artisan ceramic plate, soft warm directional lighting, 8k culinary magazine shot"
 }
 
 REGLAS ESTRICTAS:
 1. Incluye entre 5 y 9 ingredientes detallados con sus cantidades y unidades.
 2. Incluye exactamente 4 pasos cronológicos con temporizadores en segundos ('timerSeconds') realistas.
 3. Las calorías y macronutrientes deben ser el cálculo matemático real de los ingredientes.
-4. Responde ÚNICAMENTE el JSON, sin texto ni explicaciones adicionales.`;
+4. 'imagePrompt' DEBE estar en INGLÉS describiendo con máximo detalle visual las texturas (crujiente, dorado, glaseado brillante, salsa sedosa), guarnición fresca y presentación de restaurante con estrellas Michelin.
+5. Responde ÚNICAMENTE el JSON, sin texto ni explicaciones adicionales.`;
 
     const parts = [];
 

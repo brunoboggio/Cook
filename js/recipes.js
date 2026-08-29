@@ -751,7 +751,15 @@ window.regenerateAIPreviewImage = function() {
     imgEl.style.filter = 'grayscale(0.5)';
   }
   const newSeed = Math.floor(Math.random() * 999999);
-  const newImgUrl = window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, null, newSeed);
+  const variations = [
+    'top-down gourmet flat lay on artisanal plate with fresh herb garnish',
+    'macro close-up showing succulent juicy textures and glistening glaze',
+    'cinematic restaurant table setting with warm soft lighting and wine glass',
+    'modern minimalist Michelin plating with vibrant puree drops and microgreens'
+  ];
+  const selectedVar = variations[Math.floor(Math.random() * variations.length)];
+  const customPrompt = `${tempGeneratedRecipe.title}, ${selectedVar}`;
+  const newImgUrl = window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, customPrompt, newSeed);
   tempGeneratedRecipe.image = newImgUrl;
   
   if (imgEl) {
@@ -761,7 +769,7 @@ window.regenerateAIPreviewImage = function() {
     imgEl.style.animation = 'pulseAmber 0.8s ease';
     setTimeout(() => { imgEl.style.animation = ''; }, 800);
   }
-  if (window.showToast) window.showToast('🎨 Fotografía gourmet regenerada con Nano Banana 2', 'sky');
+  if (window.showToast) window.showToast('🎨 Nueva toma fotográfica gourmet generada con Nano Banana 2', 'sky');
 };
 
 window.saveAndCloseAICreator = async function() {
