@@ -14,6 +14,11 @@ class AIRecipeGenerator {
       bife: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
       carne: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
       ternera: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      cerdo: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      pork: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      costeleta: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      costilla: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      solomillo: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
       hamburguesa: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
       burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
       tarta: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
@@ -123,19 +128,32 @@ class AIRecipeGenerator {
   }
 
   // --- Dynamic AI Image Generator with Nano Banana 2 ---
-  async generateAIImageUrl(dishName, customPrompt = null, seed = null) {
+  generateAIImageUrl(dishName, customPrompt = null, seed = null) {
     const settings = this.getAISettings();
     const cleanSeed = seed || Math.floor(Math.random() * 999999);
     
-    // Construct rich culinary gastronomy prompt optimized for Nano Banana 2
-    let baseDish = dishName ? dishName.trim() : 'Gourmet Culinary Dish';
-    const culinaryDetails = customPrompt ? `${customPrompt}. ` : '';
-    const culinaryPrompt = `Award-winning professional gourmet food photography of ${baseDish}. ${culinaryDetails}Exquisite restaurant culinary plating, vibrant colors, appetizing texture, warm soft cinematic studio lighting, shallow depth of field, 8k resolution, macro culinary magazine styling`;
+    // Clean text and remove accents for URL safety
+    const cleanDish = (dishName || 'Gourmet Culinary Dish')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9 ]/g, ' ')
+      .trim();
 
-    // High-speed Nano Banana 2 gastronomic image engine
+    const culinaryPrompt = `delicious gourmet ${cleanDish} restaurant culinary plating, warm studio lighting, 8k food photography`;
     const model = settings.imageModel || 'nano-banana-2';
     const cleanPrompt = encodeURIComponent(culinaryPrompt);
     return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
+  }
+
+  // --- Instant Fallback Image Resolver ---
+  getFallbackImage(dishName) {
+    const catalog = this.photoCatalog || {};
+    if (!dishName) return catalog.default || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
+    const lower = String(dishName).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    for (const [key, url] of Object.entries(catalog)) {
+      if (key !== 'default' && lower.includes(key)) return url;
+    }
+    return catalog.default || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80';
   }
 
   // --- Discover Available Models for API Key ---
@@ -471,7 +489,7 @@ REGLAS ESTRICTAS:
     // Generate image using nano-banana-2
     let finalImage = customImage;
     if (!finalImage) {
-      finalImage = await this.generateAIImageUrl(parsed.title || dishName, parsed.imagePrompt);
+      finalImage = this.generateAIImageUrl(parsed.title || dishName, parsed.imagePrompt);
     }
 
     if (onProgress) {
@@ -547,7 +565,7 @@ REGLAS ESTRICTAS:
     // 6. Select Best Image (Custom Image > AI Generated Pollinations Image > Curated Unsplash Fallback)
     let finalImage = customImage;
     if (!finalImage) {
-      finalImage = await this.generateAIImageUrl(title);
+      finalImage = this.generateAIImageUrl(title);
     }
 
     // Unique Slug ID

@@ -222,7 +222,7 @@ function renderRecipes() {
       <div class="glass-panel glass-panel-interactive glow-card" style="display: flex; flex-direction: column; overflow: hidden; padding: 0; border-radius: 20px;">
         <!-- Recipe Card Image Header -->
         <div style="position: relative; width: 100%; height: 210px; overflow: hidden; background: #161A20;">
-          <img src="${recipe.image}" alt="${recipe.title}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" />
+          <img src="${recipe.image}" onerror="this.onerror=null; this.src='${window.aiRecipeGenerator?.getFallbackImage(recipe.title) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}'" alt="${recipe.title}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" />
           
           <div style="position: absolute; top: 1rem; left: 1rem; display: flex; gap: 0.4rem; flex-wrap: wrap;">
             <span class="badge badge-emerald" style="box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: 800;">
@@ -302,7 +302,7 @@ window.openRecipeModal = function(recipeId) {
     <div class="modal-content" style="max-width: 820px; padding: 0; overflow: hidden; border-radius: 24px; border: 1px solid var(--border-strong);">
       <!-- Modal Header Banner -->
       <div style="position: relative; width: 100%; height: 260px; background: #000;">
-        <img src="${recipe.image}" alt="${recipe.title}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" />
+        <img src="${recipe.image}" onerror="this.onerror=null; this.src='${window.aiRecipeGenerator?.getFallbackImage(recipe.title) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}'" alt="${recipe.title}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" />
         <button class="btn-icon modal-close" onclick="closeRecipeModal()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.6); color: #FFF; border: none;">✕</button>
         <div style="position: absolute; bottom: 1.25rem; left: 1.5rem; right: 1.5rem;">
           <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
@@ -662,7 +662,7 @@ function renderAIPreview(recipe) {
       <!-- Recipe Card Preview Header -->
       <div style="display: flex; gap: 1.15rem; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 18px;">
         <div style="position: relative; flex-shrink: 0;">
-          <img id="ai-preview-dish-img" src="${recipe.image}" alt="${recipe.title}" style="width: 95px; height: 95px; border-radius: 16px; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.6); border: 1px solid rgba(16, 185, 129, 0.4);" />
+          <img id="ai-preview-dish-img" src="${recipe.image}" onerror="this.onerror=null; this.src='${window.aiRecipeGenerator?.getFallbackImage(recipe.title) || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}'" alt="${recipe.title}" style="width: 95px; height: 95px; border-radius: 16px; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.6); border: 1px solid rgba(16, 185, 129, 0.4);" />
           <button type="button" onclick="regenerateAIPreviewImage()" class="btn btn-ghost btn-sm" style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: 0.68rem; padding: 0.2rem 0.5rem; background: rgba(13, 17, 23, 0.95); border: 1px solid var(--accent-emerald); border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.4);" title="Generar otra variante de foto">
             🔄 Cambiar Foto
           </button>
@@ -743,7 +743,7 @@ function renderAIPreview(recipe) {
   `;
 }
 
-window.regenerateAIPreviewImage = async function() {
+window.regenerateAIPreviewImage = function() {
   if (!tempGeneratedRecipe) return;
   const imgEl = document.getElementById('ai-preview-dish-img');
   if (imgEl) {
@@ -751,7 +751,7 @@ window.regenerateAIPreviewImage = async function() {
     imgEl.style.filter = 'grayscale(0.5)';
   }
   const newSeed = Math.floor(Math.random() * 999999);
-  const newImgUrl = await window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, null, newSeed);
+  const newImgUrl = window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, null, newSeed);
   tempGeneratedRecipe.image = newImgUrl;
   
   if (imgEl) {
