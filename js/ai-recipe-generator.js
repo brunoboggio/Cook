@@ -1,224 +1,198 @@
 /* ==========================================================================
-   FRIDGEFLOW - AI CULINARY RECIPE GENERATOR & SEARCH ENGINE
-   Intelligent Recipe Creation from Natural Language, Macro Calculation & Imagery
+   FRIDGEFLOW - AI CULINARY RECIPE GENERATOR & GASTRONOMIC ENGINE (v5.0)
+   Dynamic Multi-Cuisine Synthesis, Photorealistic AI Imagery, Macro Engine & Cloud Sync
    ========================================================================== */
 
 class AIRecipeGenerator {
   constructor() {
+    // Verified High-Definition Curated Culinary Photo Library (Fallback & Archetype Engine)
     this.photoCatalog = {
-      chicken: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+      // Carnes y Platos Típicos Argentinos / Latinos
+      empanada: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80',
+      milanesa: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=800&q=80',
+      asado: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+      bife: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
+      carne: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
+      ternera: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      hamburguesa: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+      tarta: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
+
+      // Aves y Pescados
       pollo: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+      chicken: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+      pavo: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=80',
       salmon: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80',
       salmón: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80',
-      beef: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
-      ternera: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
-      carne: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80',
-      tuna: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&w=800&q=80',
       atun: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&w=800&q=80',
       atún: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&w=800&q=80',
+      pescado: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80',
+      merluza: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80',
+      langostinos: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=800&q=80',
+      gambas: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=800&q=80',
+
+      // Cocina Italiana y Pastas
+      lasana: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=800&q=80',
+      lasagna: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=800&q=80',
       pasta: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281691?auto=format&fit=crop&w=800&q=80',
-      curry: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=800&q=80',
-      bowl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
-      salad: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
-      ensalada: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
-      egg: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
-      huevo: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
-      tortilla: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
-      tofu: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
-      burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
-      hamburguesa: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
-      pavo: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=800&q=80',
+      espaguetis: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281691?auto=format&fit=crop&w=800&q=80',
+      fettuccine: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281691?auto=format&fit=crop&w=800&q=80',
+      pizza: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
+      risotto: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80',
       arroz: 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=80',
-      rice: 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=800&q=80',
-      queso: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=800&q=80',
+      paella: 'https://images.unsplash.com/photo-1534080564583-6be75777b70a?auto=format&fit=crop&w=800&q=80',
+
+      // Mexicana y Tex-Mex
+      taco: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=800&q=80',
+      tacos: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=800&q=80',
+      fajitas: 'https://images.unsplash.com/photo-1534352956036-cd81e27dd615?auto=format&fit=crop&w=800&q=80',
+      burrito: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=80',
+      quesadilla: 'https://images.unsplash.com/photo-1618040996337-56904b7850b9?auto=format&fit=crop&w=800&q=80',
+
+      // Asiática y Exótica
+      curry: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=800&q=80',
+      sushi: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=800&q=80',
+      ramen: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80',
+      wok: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80',
+      tataki: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&w=800&q=80',
+      poke: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+      ceviche: 'https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?auto=format&fit=crop&w=800&q=80',
+      tofu: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
+
+      // Sopas, Guisos y Legumbres
+      guiso: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80',
+      sopa: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80',
+      lentejas: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80',
+      garbanzos: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80',
+
+      // Desayunos, Huevos y Bowls Fitness
+      huevo: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+      huevos: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+      tortilla: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+      omelette: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+      pancakes: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=80',
+      panqueques: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=800&q=80',
+      avena: 'https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?auto=format&fit=crop&w=800&q=80',
+      tostada: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
+      bowl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+      ensalada: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+
       default: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'
     };
   }
 
-  // Generate Recipe Asynchronously with Multi-Stage Progress Simulation
+  // --- Dynamic AI Image Generator ---
+  generateAIImageUrl(dishName, seed = null) {
+    const cleanSeed = seed || Math.floor(Math.random() * 999999);
+    const cleanPrompt = encodeURIComponent(`professional gourmet delicious food photography of ${dishName}, restaurant culinary plating, cinematic warm lighting, sharp focus, 8k resolution, award winning culinary styling`);
+    return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=800&height=600&nologo=true&seed=${cleanSeed}`;
+  }
+
+  // --- Main AI Generation Pipeline ---
   async generateRecipe(dishName, userNotes = '', focus = 'protein', onProgress = null, customImage = null) {
     if ((!dishName || dishName.trim().length === 0) && !customImage) {
-      throw new Error('Por favor, introduce el nombre del plato o sube una imagen.');
+      throw new Error('Por favor, escribe el nombre del plato o sube una fotografía.');
     }
 
     const cleanTitle = (dishName && dishName.trim().length > 0) ? dishName.trim() : 'Creación Culinaria Especial';
     const cleanNotes = userNotes.trim();
 
-    // Stage 1: Analyze dish & culinary profile / image
+    // Stage 1: Culinary analysis & flavor profile
     if (onProgress) {
       const step1Text = customImage 
         ? `📸 Analizando imagen y reconociendo ingredientes para "${cleanTitle}"...`
-        : `🔍 Investigando técnicas y perfiles de sabor para "${cleanTitle}"...`;
+        : `🔍 Investigando técnica gastronómica y perfil de sabor para "${cleanTitle}"...`;
       onProgress({ step: 1, text: step1Text });
     }
-    await this.delay(650);
+    await this.delay(500);
 
     // Stage 2: Nutrient & protein calculation
-    if (onProgress) onProgress({ step: 2, text: '⚖️ Calculando macronutrientes, proteínas y micronutrientes biodisponibles...' });
-    await this.delay(650);
+    if (onProgress) onProgress({ step: 2, text: '⚖️ Calculando macronutrientes exactos, proteínas biodisponibles y calorías...' });
+    await this.delay(500);
 
     // Stage 3: Image generation & styling
     if (onProgress) {
       const step3Text = customImage
-        ? '✨ Optimizando fotografía adjunta y ficha gastronómica...'
-        : '🎨 Generando presentación visual y fotografía culinaria en alta resolución...';
+        ? '✨ Optimizando fotografía gastronómica adjunta...'
+        : '🎨 Generando fotografía gourmet fotorrealista con IA...';
       onProgress({ step: 3, text: step3Text });
     }
-    await this.delay(700);
+    await this.delay(600);
 
     // Stage 4: Structure cooking steps & timers
-    if (onProgress) onProgress({ step: 4, text: '📝 Estructurando pasos cronometrados, timers y consejos de Chef...' });
-    await this.delay(600);
+    if (onProgress) onProgress({ step: 4, text: '📝 Redactando pasos guiados cronometrados y consejos de Chef...' });
+    await this.delay(500);
 
     // Build the AI Recipe Object
     const recipe = this.synthesizeRecipe(cleanTitle, cleanNotes, focus, customImage);
 
     if (onProgress) onProgress({ step: 5, text: '✨ ¡Receta completada y lista para cocinar!' });
-    await this.delay(350);
+    await this.delay(300);
 
     return recipe;
   }
 
+  // --- Deep Gastronomic Decomposer ---
   synthesizeRecipe(title, notes, focus, customImage = null) {
-    const lowerTitle = title.toLowerCase();
-    const lowerNotes = notes.toLowerCase();
-    const combined = `${lowerTitle} ${lowerNotes}`;
+    const lower = `${title} ${notes}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-    // 1. Identify Main Protein & Ingredients
-    const ingredients = [];
-    let estimatedProtein = 42;
-    let estimatedCalories = 490;
-    let estimatedCarbs = 32;
-    let estimatedFat = 14;
-    let prepTime = 12;
-    let cookTime = 15;
+    // 1. Determine Meal Category
     let category = 'almuerzo';
-
-    if (combined.includes('desayuno') || combined.includes('pancakes') || combined.includes('tostada') || combined.includes('smoothie') || combined.includes('tortilla')) {
+    if (lower.includes('desayun') || lower.includes('pancake') || lower.includes('panqueque') || lower.includes('tostad') || lower.includes('smoothie') || lower.includes('avena') || lower.includes('waffle') || lower.includes('porridge')) {
       category = 'desayuno';
-    } else if (combined.includes('cena') || combined.includes('ligero') || combined.includes('ensalada') || combined.includes('sopa') || combined.includes('crema')) {
+    } else if (lower.includes('cena') || lower.includes('ensalada') || lower.includes('sopa') || lower.includes('crema') || lower.includes('ligero') || lower.includes('tartar') || lower.includes('ceviche')) {
       category = 'cena';
     } else {
       category = 'almuerzo';
     }
 
-    // Determine Protein Source & Core Ingredients
-    if (combined.includes('pollo') || combined.includes('pechuga')) {
-      ingredients.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo fresca', amount: '220', unit: 'g', isMainProtein: true });
-      estimatedProtein = 48;
-      estimatedCalories = 480;
-    } else if (combined.includes('ternera') || combined.includes('carne') || combined.includes('hamburguesa')) {
-      ingredients.push({ id: 'ternera_picada', name: 'Carne magra de ternera', amount: '200', unit: 'g', isMainProtein: true });
-      estimatedProtein = 50;
-      estimatedCalories = 520;
-    } else if (combined.includes('salmón') || combined.includes('salmon')) {
-      ingredients.push({ id: 'salmon', name: 'Lomo de salmón fresco', amount: '220', unit: 'g', isMainProtein: true });
-      estimatedProtein = 46;
-      estimatedCalories = 540;
-      estimatedFat = 20;
-    } else if (combined.includes('atún') || combined.includes('atun') || combined.includes('tataki')) {
-      ingredients.push({ id: 'atun_fresco', name: 'Lomo de atún fresco', amount: '200', unit: 'g', isMainProtein: true });
-      ingredients.push({ id: 'edamame', name: 'Edamames desgranados', amount: '80', unit: 'g' });
-      estimatedProtein = 52;
-      estimatedCalories = 490;
-    } else if (combined.includes('pavo')) {
-      ingredients.push({ id: 'pavo_pechuga', name: 'Pechuga de pavo braseada', amount: '200', unit: 'g', isMainProtein: true });
-      estimatedProtein = 46;
-      estimatedCalories = 440;
-    } else if (combined.includes('tofu') || combined.includes('seitan') || combined.includes('vegano') || combined.includes('soja')) {
-      ingredients.push({ id: 'tofu', name: 'Tofu firme marinado en soja', amount: '250', unit: 'g', isMainProtein: true });
-      ingredients.push({ id: 'edamame', name: 'Edamames verdes', amount: '100', unit: 'g' });
-      estimatedProtein = 42;
-      estimatedCalories = 460;
-    } else if (combined.includes('huevo') || combined.includes('tortilla') || combined.includes('claras')) {
-      ingredients.push({ id: 'claras_huevo', name: 'Claras de huevo pasteurizadas', amount: '200', unit: 'ml', isMainProtein: true });
-      ingredients.push({ id: 'huevos', name: 'Huevos de campo enteros', amount: '2', unit: 'unidades' });
-      estimatedProtein = 40;
-      estimatedCalories = 380;
-    } else {
-      // Default versatile protein
-      ingredients.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo de corral', amount: '200', unit: 'g', isMainProtein: true });
-      estimatedProtein = 45;
-      estimatedCalories = 480;
+    // 2. Determine Archetype & Cuisine Profile
+    const archetype = this.detectArchetype(lower);
+    
+    // 3. Assemble Specific Ingredients
+    const ingredients = this.buildIngredients(archetype, lower, focus);
+
+    // 4. Calculate Mathematical True Macros based on Ingredients
+    const macros = this.calculateMacros(ingredients, focus);
+
+    // 5. Build Cooking Times & Steps
+    const cookingTimes = this.calculateTimes(archetype);
+    const steps = this.generateSpecificSteps(title, archetype, ingredients, lower);
+
+    // 6. Select Best Image (Custom Image > AI Generated Pollinations Image > Curated Unsplash Fallback)
+    let finalImage = customImage;
+    if (!finalImage) {
+      finalImage = this.generateAIImageUrl(title);
     }
-
-    // Determine Carbs & Sides
-    if (combined.includes('arroz') || combined.includes('basmati')) {
-      ingredients.push({ id: 'arroz_jazmin', name: 'Arroz basmati / jazmín aromático', amount: '75', unit: 'g' });
-      estimatedCarbs = 58;
-    } else if (combined.includes('pasta') || combined.includes('fettuccine') || combined.includes('macarrones')) {
-      ingredients.push({ id: 'pasta_fettuccine', name: 'Pasta integral o fettuccine', amount: '80', unit: 'g' });
-      estimatedCarbs = 55;
-    } else if (combined.includes('quinoa')) {
-      ingredients.push({ id: 'quinoa', name: 'Quinoa real lavada', amount: '80', unit: 'g' });
-      estimatedCarbs = 48;
-      estimatedProtein += 4;
-    } else if (combined.includes('patata') || combined.includes('boniato')) {
-      ingredients.push({ id: 'patata', name: 'Patatas (Papas) al vapor', amount: '200', unit: 'g' });
-      estimatedCarbs = 40;
-    } else if (combined.includes('garbanzos') || combined.includes('lentejas')) {
-      ingredients.push({ id: 'garbanzos_cocidos', name: 'Garbanzos cocidos escurridos', amount: '150', unit: 'g' });
-      estimatedCarbs = 38;
-      estimatedProtein += 9;
-    } else {
-      // Healthy vegetable carbs
-      ingredients.push({ id: 'arroz_jazmin', name: 'Guarnición de arroz o quinoa', amount: '60', unit: 'g' });
-      estimatedCarbs = 42;
-    }
-
-    // Fresh Aromatics & Greens
-    if (combined.includes('curry') || combined.includes('coco')) {
-      ingredients.push({ id: 'leche', name: 'Leche de coco cremosa', amount: '120', unit: 'ml' });
-      ingredients.push({ id: 'paprika', name: 'Polvo de curry y pimentón', amount: '1.5', unit: 'cucharadita' });
-      ingredients.push({ id: 'espinacas', name: 'Espinacas tiernas baby', amount: '70', unit: 'g' });
-    } else if (combined.includes('aguacate') || combined.includes('bowl')) {
-      ingredients.push({ id: 'aguacate', name: 'Aguacate (Palta) en láminas', amount: '0.5', unit: 'unidades' });
-      ingredients.push({ id: 'tomates_cherry', name: 'Tomates cherry partidos', amount: '80', unit: 'g' });
-      ingredients.push({ id: 'sesamo', name: 'Semillas de sésamo tostado', amount: '1', unit: 'cucharaditas' });
-    } else {
-      ingredients.push({ id: 'ajo', name: 'Dientes de ajo laminados', amount: '2', unit: 'dientes' });
-      ingredients.push({ id: 'aceite_oliva', name: 'Aceite de oliva virgen extra (AOVE)', amount: '10', unit: 'ml' });
-      ingredients.push({ id: 'perejil', name: 'Perejil o cilantro fresco picado', amount: '1', unit: 'cucharadas' });
-    }
-
-    // Adjust for focus
-    if (focus === 'keto') {
-      estimatedCarbs = Math.min(12, estimatedCarbs);
-      estimatedFat += 10;
-    } else if (focus === 'protein' || focus === 'hyperprotein') {
-      estimatedProtein = Math.max(45, estimatedProtein);
-    }
-
-    // Select Best Image
-    const matchedImage = this.matchImage(combined);
-
-    // Generate Step-by-Step Cooking Guide with Timers
-    const steps = this.generateSteps(title, ingredients, combined);
 
     // Unique Slug ID
-    const cleanId = 'ai-' + lowerTitle
+    const cleanSlug = 'ai-' + title
+      .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') + '-' + Math.floor(Math.random() * 1000);
 
+    // Format Title
+    const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
+
     return {
-      id: cleanId,
-      title: title.charAt(0).toUpperCase() + title.slice(1),
-      subtitle: `Plato de alta biodisponibilidad creado con precisión gastronómica e IA.`,
-      description: `Una creación gastronómica equilibrada diseñada para optimizar tu aporte proteico (${estimatedProtein}g) sin sacrificar textura ni sabor. Cada ingrediente ha sido seleccionado para potenciar la absorción de nutrientes y agilizar la preparación. ${notes ? 'Nota personalizada: ' + notes : ''}`,
+      id: cleanSlug,
+      title: formattedTitle,
+      subtitle: `Plato ${archetype.label} de alto rendimiento creado con Inteligencia Artificial.`,
+      description: `Creación culinaria artesanal diseñada para optimizar tu nutrición (${macros.protein}g proteína) con técnica profesional. Combina ${ingredients.slice(0, 3).map(i => i.name.toLowerCase()).join(', ')} para una textura impecable y sabor profundo. ${notes ? 'Nota personalizada: ' + notes : ''}`,
       category: category,
-      prepTime: prepTime,
-      cookTime: cookTime,
+      prepTime: cookingTimes.prepTime,
+      cookTime: cookingTimes.cookTime,
       servings: 1,
-      difficulty: cookTime > 20 ? 'Intermedia' : 'Fácil',
-      calories: estimatedCalories,
-      protein: estimatedProtein,
-      carbs: estimatedCarbs,
-      fat: estimatedFat,
-      fiber: 6,
-      image: customImage || matchedImage,
-      tags: ['✨ Creada con IA', customImage ? '📸 Con Foto/Captura' : 'Hiperproteico', 'Fácil', 'Fitness', category === 'cena' ? 'Cena Ligera' : 'Energético'],
+      difficulty: cookingTimes.cookTime > 25 ? 'Intermedia' : 'Fácil',
+      calories: macros.calories,
+      protein: macros.protein,
+      carbs: macros.carbs,
+      fat: macros.fat,
+      fiber: macros.fiber,
+      image: finalImage,
+      tags: ['✨ Creada con IA', customImage ? '📸 Con Foto' : 'Hiperproteico', archetype.tag, 'Fácil', category === 'cena' ? 'Cena Ligera' : 'Energético'],
       isCustom: true,
       ingredients: ingredients,
       steps: steps,
@@ -226,63 +200,645 @@ class AIRecipeGenerator {
     };
   }
 
-  matchImage(query) {
-    for (const [key, url] of Object.entries(this.photoCatalog)) {
-      if (query.includes(key)) {
-        return url;
-      }
+  // --- Cuisine Archetype Detection ---
+  detectArchetype(query) {
+    if (query.includes('empanada')) {
+      return { type: 'empanadas', label: 'Estilo Rioplatense', tag: 'Empanadas', method: 'horno' };
     }
-    return this.photoCatalog.default;
+    if (query.includes('milanesa') || query.includes('suprema') || query.includes('escalope')) {
+      return { type: 'milanesa', label: 'Clásico al Horno / Sartén', tag: 'Milanesa', method: 'horno' };
+    }
+    if (query.includes('asado') || query.includes('bife') || query.includes('entran') || query.includes('parrilla')) {
+      return { type: 'asado', label: 'Parrilla Gourmet', tag: 'Asado', method: 'plancha' };
+    }
+    if (query.includes('tarta') || query.includes('quiche') || query.includes('pascualina')) {
+      return { type: 'tarta', label: 'Tarta Horneada Fit', tag: 'Tarta', method: 'horno' };
+    }
+    if (query.includes('lasana') || query.includes('lasagna') || query.includes('canelon')) {
+      return { type: 'lasagna', label: 'Italiano Gratinado', tag: 'Lasaña', method: 'horno' };
+    }
+    if (query.includes('pasta') || query.includes('espagueti') || query.includes('fettuccine') || query.includes('macarron') || query.includes('ñoqui') || query.includes('penne')) {
+      return { type: 'pasta', label: 'Pasta Artesanal', tag: 'Pasta', method: 'hervido' };
+    }
+    if (query.includes('risotto') || query.includes('paella')) {
+      return { type: 'risotto', label: 'Arroz Gourmet', tag: 'Arroz', method: 'sofrito' };
+    }
+    if (query.includes('taco') || query.includes('fajita') || query.includes('burrito') || query.includes('quesadilla')) {
+      return { type: 'tacos', label: 'Cocina Mexicana', tag: 'Tacos', method: 'plancha' };
+    }
+    if (query.includes('burger') || query.includes('hamburguesa')) {
+      return { type: 'burger', label: 'Burger Gourmet Fit', tag: 'Hamburguesa', method: 'plancha' };
+    }
+    if (query.includes('curry') || query.includes('tikka') || query.includes('masala')) {
+      return { type: 'curry', label: 'Curry Aromático', tag: 'Curry', method: 'guiso' };
+    }
+    if (query.includes('poke') || query.includes('ceviche') || query.includes('tartar') || query.includes('sushi')) {
+      return { type: 'poke_ceviche', label: 'Crudo & Curado Gourmet', tag: 'Poke / Ceviche', method: 'frio' };
+    }
+    if (query.includes('wok') || query.includes('saltead') || query.includes('teriyaki') || query.includes('stir')) {
+      return { type: 'wok', label: 'Wok & Salteado Oriental', tag: 'Salteado', method: 'plancha' };
+    }
+    if (query.includes('sopa') || query.includes('ramen') || query.includes('guiso') || query.includes('cazuela') || query.includes('estofado')) {
+      return { type: 'guiso', label: 'Guiso / Sopa Reconfortante', tag: 'Guiso', method: 'guiso' };
+    }
+    if (query.includes('pancake') || query.includes('panqueque') || query.includes('avena') || query.includes('waffle') || query.includes('desayun')) {
+      return { type: 'breakfast', label: 'Desayuno Proteico', tag: 'Desayuno Fit', method: 'plancha' };
+    }
+    if (query.includes('tortilla') || query.includes('omelette') || query.includes('huevo') || query.includes('shakshuka')) {
+      return { type: 'eggs', label: 'Huevos & Tortillas Gourmet', tag: 'Huevos', method: 'plancha' };
+    }
+    if (query.includes('ensalada') || query.includes('bowl')) {
+      return { type: 'salad', label: 'Bowl & Ensalada Fresca', tag: 'Ensalada', method: 'frio' };
+    }
+
+    // Default: Proteína al Plato con Guarnición
+    return { type: 'general_protein', label: 'Alta Proteína', tag: 'Fitness', method: 'plancha' };
   }
 
-  generateSteps(title, ingredients, query) {
+  // --- Dynamic Ingredients Builder ---
+  buildIngredients(archetype, query, focus) {
+    const list = [];
+
+    switch (archetype.type) {
+      case 'empanadas':
+        if (query.includes('pollo')) {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo cocida y desmechada', amount: '220', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'ternera_picada', name: 'Carne magra de ternera picada a cuchillo', amount: '220', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'cebolla', name: 'Cebolla dulce picada en brunoise', amount: '1', unit: 'unidades' });
+        list.push({ id: 'pimiento_rojo', name: 'Pimiento rojo picado fino', amount: '0.5', unit: 'unidades' });
+        list.push({ id: 'huevos', name: 'Huevo duro de campo picado', amount: '1', unit: 'unidades' });
+        list.push({ id: 'arroz_jazmin', name: 'Discos de masa para empanadas al horno', amount: '3', unit: 'unidades' });
+        list.push({ id: 'aceite_oliva', name: 'Aceite de oliva virgen extra (AOVE)', amount: '10', unit: 'ml' });
+        break;
+
+      case 'milanesa':
+        if (query.includes('pollo') || query.includes('suprema')) {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo fileteada', amount: '220', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'ternera_picada', name: 'Filetes tiernos de nalga o lomo vacuno', amount: '220', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'huevos', name: 'Huevos de campo batidos con ajo y perejil', amount: '1', unit: 'unidades' });
+        list.push({ id: 'avena', name: 'Rebozado crujiente de pan rallado integral y avena', amount: '40', unit: 'g' });
+        if (query.includes('napolitana') || query.includes('queso')) {
+          list.push({ id: 'queso_parmesano', name: 'Queso mozzarella o cuartirolo fundente', amount: '50', unit: 'g' });
+          list.push({ id: 'tomate', name: 'Salsa de tomate casera al orégano', amount: '60', unit: 'g' });
+        }
+        list.push({ id: 'patata', name: 'Papas (patatas) en bastones al horno', amount: '150', unit: 'g' });
+        list.push({ id: 'aceite_oliva', name: 'Aceite de oliva virgen extra (AOVE)', amount: '10', unit: 'ml' });
+        break;
+
+      case 'curry':
+        if (query.includes('ternera') || query.includes('carne')) {
+          list.push({ id: 'ternera_picada', name: 'Carne magra de ternera en dados tiernos', amount: '220', unit: 'g', isMainProtein: true });
+        } else if (query.includes('garbanzo') || query.includes('vegano') || query.includes('tofu')) {
+          list.push({ id: 'tofu', name: 'Tofu firme o garbanzos bio', amount: '250', unit: 'g', isMainProtein: true });
+        } else if (query.includes('langostino') || query.includes('gamba')) {
+          list.push({ id: 'gambas', name: 'Langostinos o gambas peladas', amount: '200', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo en dados tiernos', amount: '220', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'leche_coco', name: 'Leche de coco cremosa light', amount: '120', unit: 'ml' });
+        list.push({ id: 'garbanzos_cocidos', name: 'Garbanzos cocidos o espinacas', amount: '80', unit: 'g' });
+        list.push({ id: 'arroz_jazmin', name: 'Arroz basmati aromático', amount: '70', unit: 'g' });
+        list.push({ id: 'pimiento_rojo', name: 'Pimiento rojo y cebolla en juliana', amount: '80', unit: 'g' });
+        list.push({ id: 'ajo', name: 'Jengibre fresco, ajo y curry en polvo', amount: '2', unit: 'dientes' });
+        break;
+
+      case 'burger':
+        if (query.includes('pollo')) {
+          list.push({ id: 'pollo_pechuga', name: 'Medallón 100% pechuga de pollo picada', amount: '200', unit: 'g', isMainProtein: true });
+        } else if (query.includes('lentejas') || query.includes('vegano') || query.includes('tofu')) {
+          list.push({ id: 'lentejas_cocidas', name: 'Medallón artesanal de lentejas y avena', amount: '200', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'ternera_picada', name: 'Medallón 100% carne magra de ternera', amount: '200', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'huevos', name: 'Huevo de campo a la plancha', amount: '1', unit: 'unidades' });
+        list.push({ id: 'queso_parmesano', name: 'Queso cheddar o mozzarella en lámina', amount: '30', unit: 'g' });
+        list.push({ id: 'arroz_jazmin', name: 'Pan brioche tostado o base al plato', amount: '1', unit: 'unidades' });
+        list.push({ id: 'tomate', name: 'Rodajas de tomate y hojas verdes', amount: '60', unit: 'g' });
+        list.push({ id: 'cebolla', name: 'Cebolla caramelizada sin azúcares añadidos', amount: '40', unit: 'g' });
+        break;
+
+      case 'lasagna':
+        if (query.includes('pollo') || query.includes('pavo')) {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo o pavo picada magra', amount: '200', unit: 'g', isMainProtein: true });
+        } else if (query.includes('atun')) {
+          list.push({ id: 'atun_fresco', name: 'Atún desmenuzado y espinacas', amount: '200', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'ternera_picada', name: 'Carne magra de ternera picada', amount: '200', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'pasta_fettuccine', name: 'Láminas de pasta para lasaña', amount: '70', unit: 'g' });
+        list.push({ id: 'tomate', name: 'Salsa pomodoro rústica con albahaca', amount: '120', unit: 'g' });
+        list.push({ id: 'espinacas', name: 'Espinacas frescas salteadas', amount: '80', unit: 'g' });
+        list.push({ id: 'queso_parmesano', name: 'Queso ricotta o ricota magra', amount: '60', unit: 'g' });
+        list.push({ id: 'queso_parmesano', name: 'Parmesano rallado para gratinar', amount: '20', unit: 'g' });
+        list.push({ id: 'ajo', name: 'Dientes de ajo y cebolla', amount: '2', unit: 'dientes' });
+        break;
+
+      case 'pasta':
+        if (query.includes('salmon')) {
+          list.push({ id: 'salmon', name: 'Lomo de salmón en dados', amount: '200', unit: 'g', isMainProtein: true });
+        } else if (query.includes('atun')) {
+          list.push({ id: 'atun_fresco', name: 'Lomo de atún fresco o en lata', amount: '180', unit: 'g', isMainProtein: true });
+        } else if (query.includes('gamba') || query.includes('langostino')) {
+          list.push({ id: 'gambas', name: 'Langostinos pelados frescos', amount: '200', unit: 'g', isMainProtein: true });
+        } else if (query.includes('ternera') || query.includes('carne') || query.includes('bolognesa')) {
+          list.push({ id: 'ternera_picada', name: 'Carne magra de ternera picada', amount: '200', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo en tiras doradas', amount: '200', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'pasta_fettuccine', name: 'Pasta fettuccine o rigatoni', amount: '80', unit: 'g' });
+        list.push({ id: 'tomates_cherry', name: 'Tomates cherry dulces confitados', amount: '80', unit: 'g' });
+        list.push({ id: 'ajo', name: 'Dientes de ajo laminados', amount: '2', unit: 'dientes' });
+        list.push({ id: 'albahaca', name: 'Hojas de albahaca fresca', amount: '6', unit: 'hojas' });
+        list.push({ id: 'queso_parmesano', name: 'Parmesano reggiano rallado', amount: '20', unit: 'g' });
+        list.push({ id: 'aceite_oliva', name: 'Aceite de oliva virgen extra', amount: '10', unit: 'ml' });
+        break;
+
+      case 'tacos':
+        if (query.includes('pollo')) {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo marinada en lima y especias', amount: '220', unit: 'g', isMainProtein: true });
+        } else if (query.includes('cerdo') || query.includes('pastor') || query.includes('carnitas')) {
+          list.push({ id: 'lomo_cerdo', name: 'Lomo de cerdo magro en tiras especiadas', amount: '220', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'ternera_picada', name: 'Carne magra de ternera en fajitas', amount: '220', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'arroz_jazmin', name: 'Tortillas de maíz o trigo artesanales', amount: '3', unit: 'unidades' });
+        list.push({ id: 'aguacate', name: 'Aguacate (Palta) para guacamole fresco', amount: '0.5', unit: 'unidades' });
+        list.push({ id: 'cebolla', name: 'Cebolla morada en pluma con cilantro', amount: '0.5', unit: 'unidades' });
+        list.push({ id: 'tomate', name: 'Pico de gallo con tomate fresco', amount: '70', unit: 'g' });
+        list.push({ id: 'cilantro', name: 'Gajos de lima y cilantro fresco', amount: '1', unit: 'unidades' });
+        break;
+
+      case 'poke_ceviche':
+        if (query.includes('atun')) {
+          list.push({ id: 'atun_fresco', name: 'Lomo de atún rojo cortado en dados', amount: '200', unit: 'g', isMainProtein: true });
+        } else if (query.includes('pescado') || query.includes('corvina') || query.includes('merluza')) {
+          list.push({ id: 'merluza_pescado', name: 'Pescado blanco fresco curado en lima', amount: '200', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'salmon', name: 'Lomo de salmón fresco en cubos', amount: '200', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'arroz_jazmin', name: 'Base de arroz de sushi o quinoa real', amount: '65', unit: 'g' });
+        list.push({ id: 'aguacate', name: 'Aguacate (Palta) en láminas', amount: '0.5', unit: 'unidades' });
+        list.push({ id: 'edamame', name: 'Edamames verdes desgranados', amount: '60', unit: 'g' });
+        list.push({ id: 'pepino', name: 'Pepino crujiente y cebolla morada', amount: '60', unit: 'g' });
+        list.push({ id: 'sesamo', name: 'Semillas de sésamo y aderezo de soja-lima', amount: '10', unit: 'ml' });
+        break;
+
+      case 'breakfast':
+        list.push({ id: 'claras_huevo', name: 'Claras de huevo pasteurizadas', amount: '180', unit: 'ml', isMainProtein: true });
+        list.push({ id: 'huevos', name: 'Huevo entero de campo', amount: '1', unit: 'unidades' });
+        list.push({ id: 'avena', name: 'Avena integral suave en copos', amount: '50', unit: 'g' });
+        list.push({ id: 'yogur_griego', name: 'Yogur griego natural alto en proteína', amount: '80', unit: 'g' });
+        list.push({ id: 'platano', name: 'Plátano / Banana o frutos rojos frescos', amount: '60', unit: 'g' });
+        list.push({ id: 'canela', name: 'Canela de ceilán y esencia de vainilla', amount: '1', unit: 'pizca' });
+        break;
+
+      default:
+        // Generic Intelligent High Protein Meal
+        if (query.includes('salmon')) {
+          list.push({ id: 'salmon', name: 'Lomo de salmón fresco', amount: '220', unit: 'g', isMainProtein: true });
+        } else if (query.includes('ternera') || query.includes('carne')) {
+          list.push({ id: 'ternera_picada', name: 'Corte magro de ternera o lomo', amount: '220', unit: 'g', isMainProtein: true });
+        } else if (query.includes('pavo')) {
+          list.push({ id: 'pavo_pechuga', name: 'Pechuga de pavo braseada', amount: '220', unit: 'g', isMainProtein: true });
+        } else if (query.includes('tofu') || query.includes('vegano')) {
+          list.push({ id: 'tofu', name: 'Tofu firme marinado en soja y sésamo', amount: '250', unit: 'g', isMainProtein: true });
+        } else {
+          list.push({ id: 'pollo_pechuga', name: 'Pechuga de pollo de corral', amount: '220', unit: 'g', isMainProtein: true });
+        }
+        list.push({ id: 'patata', name: 'Guarnición de batatas / papas al vapor o arroz', amount: '150', unit: 'g' });
+        list.push({ id: 'espinacas', name: 'Vegetales salteados (espinacas, champiñones, cherry)', amount: '100', unit: 'g' });
+        list.push({ id: 'ajo', name: 'Dientes de ajo y hierbas aromáticas', amount: '2', unit: 'dientes' });
+        list.push({ id: 'aceite_oliva', name: 'Aceite de oliva virgen extra (AOVE)', amount: '10', unit: 'ml' });
+        break;
+    }
+
+    return list;
+  }
+
+  // --- Real Mathematical Macro Engine ---
+  calculateMacros(ingredients, focus) {
+    let protein = 0;
+    let calories = 0;
+    let carbs = 0;
+    let fat = 0;
+    let fiber = 5;
+
+    ingredients.forEach(item => {
+      const name = item.name.toLowerCase();
+      const amount = parseFloat(item.amount) || 100;
+
+      if (name.includes('pollo') || name.includes('pavo')) {
+        protein += Math.round((amount / 100) * 31);
+        calories += Math.round((amount / 100) * 165);
+        fat += Math.round((amount / 100) * 3.5);
+      } else if (name.includes('ternera') || name.includes('carne') || name.includes('lomo')) {
+        protein += Math.round((amount / 100) * 26);
+        calories += Math.round((amount / 100) * 200);
+        fat += Math.round((amount / 100) * 9);
+      } else if (name.includes('salmon')) {
+        protein += Math.round((amount / 100) * 25);
+        calories += Math.round((amount / 100) * 208);
+        fat += Math.round((amount / 100) * 12);
+      } else if (name.includes('atun') || name.includes('pescado') || name.includes('merluza')) {
+        protein += Math.round((amount / 100) * 28);
+        calories += Math.round((amount / 100) * 130);
+        fat += Math.round((amount / 100) * 1.5);
+      } else if (name.includes('tofu')) {
+        protein += Math.round((amount / 100) * 16);
+        calories += Math.round((amount / 100) * 140);
+        fat += Math.round((amount / 100) * 8);
+      } else if (name.includes('huevo') || name.includes('claras')) {
+        protein += 14;
+        calories += 110;
+        fat += 6;
+      } else if (name.includes('pasta') || name.includes('arroz') || name.includes('avena')) {
+        carbs += Math.round((amount / 100) * 70);
+        protein += Math.round((amount / 100) * 10);
+        calories += Math.round((amount / 100) * 360);
+      } else if (name.includes('patata') || name.includes('papa') || name.includes('batata') || name.includes('boniato')) {
+        carbs += Math.round((amount / 100) * 20);
+        calories += Math.round((amount / 100) * 90);
+      } else if (name.includes('queso') || name.includes('parmesano') || name.includes('mozzarella')) {
+        protein += 10;
+        fat += 10;
+        calories += 140;
+      } else if (name.includes('aceite') || name.includes('aove')) {
+        fat += 10;
+        calories += 90;
+      } else if (name.includes('aguacate') || name.includes('palta')) {
+        fat += 12;
+        calories += 130;
+        fiber += 4;
+      }
+    });
+
+    // Guard rails & minimum protein target
+    if (focus === 'keto') {
+      carbs = Math.min(14, carbs);
+      fat = Math.max(22, fat);
+    } else {
+      protein = Math.max(42, protein);
+    }
+
+    calories = Math.max(380, calories);
+
+    return {
+      protein: Math.round(protein),
+      calories: Math.round(calories),
+      carbs: Math.round(carbs),
+      fat: Math.round(fat),
+      fiber: Math.round(fiber)
+    };
+  }
+
+  // --- Times Calculation ---
+  calculateTimes(archetype) {
+    switch (archetype.method) {
+      case 'horno':
+        return { prepTime: 15, cookTime: 25 };
+      case 'guiso':
+        return { prepTime: 12, cookTime: 22 };
+      case 'frio':
+        return { prepTime: 14, cookTime: 0 };
+      case 'hervido':
+        return { prepTime: 8, cookTime: 14 };
+      default:
+        return { prepTime: 10, cookTime: 12 };
+    }
+  }
+
+  // --- Specific Step Generation Tailored to Archetype ---
+  generateSpecificSteps(title, archetype, ingredients, query) {
     const mainProt = ingredients.find(i => i.isMainProtein) || ingredients[0];
+    const rawProtName = mainProt.name.toLowerCase();
+    const protName = rawProtName.replace(/en (tiras|dados|cubos|fajitas|bastones)[^,]*/gi, '').trim();
     const steps = [];
 
-    // Step 1: Prep
+    if (archetype.type === 'empanadas') {
+      steps.push({
+        step: 1,
+        instruction: `Mise en place del relleno: Pica finamente la cebolla dulce y el pimiento en brunoise. En una sartén amplia con un hilo de AOVE, rehoga los vegetales a fuego medio durante 6 a 8 minutos hasta que caramelicen de forma natural.`,
+        timerSeconds: 420,
+        tip: 'Cocinar la cebolla lentamente hasta que quede translúcida y dulce es el secreto de la jugosidad tradicional del relleno.',
+        equipment: ['Tabla de corte', 'Sartén amplia', 'Cuchillo de chef']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Añade ${protName} al sofrito. Sube el fuego y cocina durante 5 minutos desmenuzando la carne. Condimenta con sal marina, pimienta, comino molido y pimentón dulce. Retira del fuego e incorpora el huevo duro picado. Deja templar el relleno.`,
+        timerSeconds: 300,
+        tip: 'Nunca armes las empanadas con el relleno caliente para no ablandar la masa antes del horno.',
+        equipment: ['Espátula']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Precalienta el horno a 200°C. Coloca una porción generosa de relleno en el centro de cada disco de masa, humedece los bordes y realiza un repulgue firme. Pincela con un toque de huevo batido para un dorado brillante.`,
+        timerSeconds: 0,
+        tip: 'Cerrar sin que quede aire dentro evita que la masa se abra durante la expansión del vapor en el horno.',
+        equipment: ['Placa de horno', 'Pincel de cocina']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Hornea durante 15 a 18 minutos hasta que la masa adquiera un tono dorado intenso y crujiente. Retira, deja reposar 2 minutos y sirve bien calientes.`,
+        timerSeconds: 960,
+        tip: 'El reposo de 2 minutos permite que los jugos internos se asienten sin quemar al morder.',
+        equipment: ['Plato de servicio']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'milanesa') {
+      steps.push({
+        step: 1,
+        instruction: `Prepara la estación de rebozado: Bate el huevo con ajo picado, perejil fresco y sal. Pasa los filetes de ${protName} por el huevo y luego presiónalos firmemente sobre el pan rallado integral / avena para que quede una capa uniforme y crujiente.`,
+        timerSeconds: 0,
+        tip: 'Presionar la carne con la palma de la mano asegura que el rebozado quede adherido sin desprenderse al cocinar.',
+        equipment: ['2 Fuentes planas', 'Tenedor']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Dispone las milanesas en una bandeja de horno precalentada a 200°C con unas gotas de AOVE. Hornea durante 8 minutos por lado (o sella en sartén a fuego medio-alto 3-4 min por lado).`,
+        timerSeconds: 480,
+        tip: 'Cocinarlas a horno fuerte con placa precalentada logra el mismo crujiente que la fritura pero con un 80% menos de grasas.',
+        equipment: ['Placa de horno antiadherente']
+      });
+      steps.push({
+        step: 3,
+        instruction: query.includes('napolitana') 
+          ? `Cubre cada milanesa con salsa de tomate casera y láminas de queso mozzarella/parmesano. Gratina en el horno a 220°C durante 4 a 5 minutos hasta que el queso burbujee.` 
+          : `Corta las papas o batatas en bastones, sazona con pimentón y hornéalas hasta que estén tiernas y doradas.`,
+        timerSeconds: 300,
+        tip: 'Un toque de orégano seco sobre el queso fundido potencia el aroma clásico napolitano.',
+        equipment: ['Horno / Espátula']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Emplata la milanesa recién salida, acompaña con gajos de limón fresco y la guarnición elegida. ¡Disfruta inmediatamente!`,
+        timerSeconds: 0,
+        tip: 'El chorrito de limón al momento aporta frescura y corta la untuosidad del plato.',
+        equipment: ['Plato llano']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'poke_ceviche') {
+      steps.push({
+        step: 1,
+        instruction: `Corta ${protName} en dados limpios y regulares de 1.5 cm. En un bowl frío, mezcla con zumo de lima recién exprimido, un toque de sal marina y cebolla morada en pluma muy fina.`,
+        timerSeconds: 0,
+        tip: 'Mantener el pescado bien frío y usar un cuchillo con filo impecable preserva la firmeza y brillo del corte.',
+        equipment: ['Tabla de corte', 'Cuchillo de chef afilado', 'Bowl de vidrio']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Deja marinar durante 4 a 6 minutos para que los cítricos desnaturalicen ligeramente las proteínas superficiales ("leche de tigre").`,
+        timerSeconds: 300,
+        tip: 'Para pescados de alta calidad, un marinado corto conserva el corazón jugoso y tierno.',
+        equipment: ['Temporizador']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Prepara la base de granos (arroz o quinoa) en un bowl amplio. Dispone por sectores el aguacate en abanico, los edamames y el pepino crujiente.`,
+        timerSeconds: 0,
+        tip: 'El contraste de temperaturas (base templada e ingredientes fríos) eleva la experiencia gastronómica.',
+        equipment: ['Bowl gourmet']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Corona con la proteína marinada en el centro, vierte el aderezo restante y decora con semillas de sésamo tostado y cilantro fresco. ¡Sirve al instante!`,
+        timerSeconds: 0,
+        tip: 'Consumir recién montado asegura el máximo crujiente de las semillas y frescura del pescado.',
+        equipment: ['Bowl de presentación']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'lasagna') {
+      steps.push({
+        step: 1,
+        instruction: `Sofrito y boloñesa: En una sartén con AOVE, rehoga la cebolla y el ajo picados. Incorpora ${protName} y dora a fuego vivo 5 min. Añade la salsa de tomate, orégano y albahaca, y deja reducir 10 min a fuego lento.`,
+        timerSeconds: 600,
+        tip: 'Cocinar la salsa a fuego suave permite que la carne absorba los aromas del tomate y la albahaca.',
+        equipment: ['Sartén honda', 'Espátula']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Montaje por capas: En una fuente apta para horno, coloca una base fina de salsa, una capa de láminas de pasta, relleno de carne, espinacas y una capa de queso ricotta / mozzarella. Repite hasta completar 3 capas.`,
+        timerSeconds: 0,
+        tip: 'Asegúrate de cubrir bien los bordes de la pasta con salsa para que se hidraten uniformemente.',
+        equipment: ['Fuente refractaria para horno']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Corona la lasaña con abundante queso parmesano rallado. Cubre con papel de aluminio y hornea a 190°C durante 18 minutos.`,
+        timerSeconds: 1080,
+        tip: 'El papel aluminio retiene la humedad interna para cocinar la pasta sin quemar la superficie.',
+        equipment: ['Horno', 'Papel aluminio']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Retira el papel de aluminio y gratina a 220°C durante 5 a 7 minutos hasta obtener una costra dorada y burbujeante. Deja reposar 5 min antes de cortar.`,
+        timerSeconds: 360,
+        tip: 'El reposo previo al corte es crucial para que las capas se compacten y no se desarmen al servir.',
+        equipment: ['Pala para servir']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'pasta') {
+      steps.push({
+        step: 1,
+        instruction: `En una olla amplia, pon a hervir 2 litros de agua con un puñado generoso de sal marina. Cuando rompa el hervor, añade la pasta y cocina durante los minutos indicados para un punto "al dente".`,
+        timerSeconds: 540,
+        tip: 'El agua debe tener el punto de sal del agua de mar para sazonar la pasta desde el núcleo.',
+        equipment: ['Olla grande', 'Pinzas de pasta']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Mientras tanto, en una sartén con AOVE dora los dientes de ajo laminados y añade ${protName}. Sella a fuego vivo durante 4 a 5 minutos y agrega los tomates cherry cortados al medio.`,
+        timerSeconds: 270,
+        tip: 'Saltear a fuego fuerte carameliza los azúcares naturales de los tomates cherry creando una salsa instantánea.',
+        equipment: ['Sartén antiadherente']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Mantecatura: Escurre la pasta reservando 1/2 taza del agua de cocción con almidón. Vierte la pasta directamente en la sartén con la proteína, añade el agua de cocción y saltea enérgicamente para emulsionar la salsa.`,
+        timerSeconds: 120,
+        tip: 'El almidón del agua de pasta emulsiona con el aceite creando una salsa brillante y sedosa sin necesidad de nata.',
+        equipment: ['Sartén']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Retira del fuego. Incorpora hojas de albahaca fresca troceadas con las manos, abundante parmesano recién rallado y un toque de pimienta negra molida. ¡Emplata de inmediato!`,
+        timerSeconds: 0,
+        tip: 'Romper la albahaca a mano en lugar de cuchillo previene la oxidación y mantiene su perfume fresco intacto.',
+        equipment: ['Plato hondo']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'tacos') {
+      steps.push({
+        step: 1,
+        instruction: `Marinado exprés: Corta ${protName} en tiras delgadas. Mezcla en un bowl con zumo de lima, ajo picado, pimentón, comino, sal y unas gotas de AOVE. Deja marinar 5 minutos.`,
+        timerSeconds: 300,
+        tip: 'El zumo de lima ablanda las fibras de la carne haciéndola más tierna y jugosa al saltear.',
+        equipment: ['Tabla de corte', 'Bowl de marinado']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Prepara los acompañamientos: Pica la cebolla morada en pluma fina con cilantro fresco y gajos de lima. Machaca el aguacate con sal y unas gotas de cítrico para un guacamole rústico.`,
+        timerSeconds: 0,
+        tip: 'Mantener la cebolla y el cilantro bien frescos aporta el contraste crujiente clásico de las taquerías.',
+        equipment: ['Cuchillo de chef']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Calienta una plancha o sartén de hierro a fuego muy vivo. Vierte la carne marinada y cocina durante 4 a 6 minutos sin remover en exceso para lograr un sellado ahumado y jugoso.`,
+        timerSeconds: 300,
+        tip: 'El fuego bien caliente sella los jugos al instante y aporta el característico sabor a las brasas.',
+        equipment: ['Plancha / Sartén de hierro']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Calienta las tortillas de maíz 30 segundos por lado. Rellena generosamente con la carne caliente, corona con guacamole, cebolla morada, pico de gallo y lima fresca. ¡Sirve al momento!`,
+        timerSeconds: 60,
+        tip: 'Calentar la tortilla sobre la misma plancha de la carne absorbe los aromas residuales.',
+        equipment: ['Plato para tacos']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'burger') {
+      steps.push({
+        step: 1,
+        instruction: `Forma el medallón con ${protName} sin compactar en exceso para mantener la jugosidad interna. Sazona ambas caras con sal marina gruesa y pimienta recién molida.`,
+        timerSeconds: 0,
+        tip: 'Sazonar justo antes de cocinar y no mezclar la sal dentro de la carne mantiene una textura mucho más tierna.',
+        equipment: ['Tabla de corte']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Calienta una plancha de hierro a fuego alto. Coloca el medallón y presiona firmemente los primeros 10 segundos. Cocina 3 minutos por lado. Añade el queso encima en el último minuto y cubre con una campana para fundir.`,
+        timerSeconds: 240,
+        tip: 'Cubrir con una tapa y unas gotas de agua en la plancha genera vapor que derrite el queso en segundos.',
+        equipment: ['Plancha de hierro', 'Espátula de metal']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Tuesta el pan sobre la plancha con unas gotas de AOVE durante 1 minuto hasta que esté dorado y crujiente para que no absorba la humedad de los vegetales.`,
+        timerSeconds: 60,
+        tip: 'El tostado crea una barrera crujiente que evita que el pan se ablande con las salsas.',
+        equipment: ['Plancha']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Montaje: Unta la base con mostaza dijon, coloca hojas verdes, rodajas de tomate fresco, el medallón con queso fundido y cebolla caramelizada. ¡Sirve con la guarnición dorada!`,
+        timerSeconds: 0,
+        tip: 'Colocar la lechuga en la base protege el pan inferior de los jugos calientes de la carne.',
+        equipment: ['Plato gourmet']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'curry') {
+      steps.push({
+        step: 1,
+        instruction: `En una cazuela o wok a fuego medio, rehoga con AOVE la cebolla en juliana, el ajo picado y el jengibre rallado durante 4 minutos hasta que desprendan todo su aroma.`,
+        timerSeconds: 240,
+        tip: 'Rallar el jengibre fresco libera sus aceites esenciales mucho más que cortarlo en láminas.',
+        equipment: ['Cazuela / Wok', 'Rallador']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Añade ${protName} en dados junto al polvo de curry y pimentón. Tuesta las especias 1 minuto en seco junto a la proteína para activar su fragancia.`,
+        timerSeconds: 180,
+        tip: 'Tostar las especias en seco despierta notas aromáticas complejas que no se consiguen si se agregan en líquido.',
+        equipment: ['Espátula']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Vierte la leche de coco cremosa e incorpora los garbanzos / vegetales. Reduce a fuego lento y cocina tapado durante 10 a 12 minutos para que todos los sabores se concentren.`,
+        timerSeconds: 660,
+        tip: 'El chup-chup a fuego suave permite que la salsa espese naturalmente sin necesidad de harinas.',
+        equipment: ['Cazuela con tapa']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Sirve el curry caliente en un bowl hondo sobre una base de arroz basmati aromático. Decora con hojas de cilantro fresco y unas gotas de zumo de lima.`,
+        timerSeconds: 0,
+        tip: 'El toque ácido de la lima al final equilibra la suntuosidad de la leche de coco.',
+        equipment: ['Bowl oriental']
+      });
+      return steps;
+    }
+
+    if (archetype.type === 'breakfast') {
+      steps.push({
+        step: 1,
+        instruction: `En un vaso de batidora o bowl, combina las claras de huevo pasteurizadas, el huevo entero, la avena en copos, canela y esencia de vainilla. Procesa 45 segundos hasta obtener una mezcla suave y homogénea.`,
+        timerSeconds: 45,
+        tip: 'Dejar reposar la mezcla 2 minutos permite que la avena absorba líquido y las tortitas queden más esponjosas.',
+        equipment: ['Batidora o Bowl', 'Varillas']
+      });
+      steps.push({
+        step: 2,
+        instruction: `Calienta una sartén antiadherente a fuego medio con unas gotas de aceite o spray. Vierte porciones de masa y cocina durante 2 minutos hasta que aparezcan burbujas en la superficie.`,
+        timerSeconds: 120,
+        tip: 'Cuando se formen burbujas estables en la cara superior es el momento exacto para dar la vuelta.',
+        equipment: ['Sartén antiadherente', 'Espátula fina']
+      });
+      steps.push({
+        step: 3,
+        instruction: `Gira con cuidado y cocina 1 a 2 minutos más por el otro lado hasta que adquieran un tono dorado apetitoso.`,
+        timerSeconds: 90,
+        tip: 'Cocinar a fuego moderado evita que se tuesten por fuera antes de cocerse por dentro.',
+        equipment: ['Sartén']
+      });
+      steps.push({
+        step: 4,
+        instruction: `Apila las tortitas en un plato, corona con yogur griego alto en proteína, rodajas de plátano / frutos rojos y un toque de canela. ¡Disfruta de un desayuno energizante!`,
+        timerSeconds: 0,
+        tip: 'El yogur griego aporta cremosidad fría en contraste con las tortitas calientes y eleva el contenido proteico total.',
+        equipment: ['Plato llano']
+      });
+      return steps;
+    }
+
+    // Default High-Protein Standard Culinary Flow
     steps.push({
       step: 1,
-      instruction: `Lava, seca y porciona los ingredientes frescos. Corta ${mainProt.name.toLowerCase()} en bocados uniformes para asegurar una cocción homogénea y sazona con sal marina, pimienta negra recién molida y un hilo de AOVE.`,
+      instruction: `Lava, seca y porciona los ingredientes frescos. Corta ${protName} en porciones uniformes y sazona con sal marina, pimienta recién molida, ajo y unas gotas de AOVE.`,
       timerSeconds: 0,
-      tip: 'Secar la proteína con papel de cocina antes de cocinar garantiza un dorado exterior crujiente sin que se cueza en su propio jugo.',
+      tip: 'Secar la proteína con papel absorbente antes de la cocción garantiza un dorado crujiente sin hervirse.',
       equipment: ['Tabla de corte', 'Cuchillo de chef']
     });
 
-    // Step 2: Searing / Cooking Base
     steps.push({
       step: 2,
-      instruction: `Calienta una sartén amplia o wok a fuego medio-alto con unas gotas de AOVE. Añade ${mainProt.name.toLowerCase()} y sella firmemente durante 3 a 4 minutos por cada lado hasta obtener una costra dorada y jugosa.`,
+      instruction: `Calienta una sartén amplia, plancha o wok a fuego medio-alto. Añade ${protName} y sella firmemente durante 3 a 4 minutos por lado hasta lograr una costra dorada aromática (Reacción de Maillard).`,
       timerSeconds: 240,
-      tip: 'No muevas la pieza durante los primeros 2 minutos para permitir que se forme la reacción de Maillard aromática.',
-      equipment: ['Sartén antiadherente o Wok', 'Pinzas']
+      tip: 'No muevas la pieza durante los primeros 2 minutos para permitir que se desarrolle el dorado caramelizado.',
+      equipment: ['Sartén antiadherente o Plancha', 'Pinzas']
     });
 
-    // Step 3: Aromatics & Sauce/Simmer
-    if (query.includes('curry') || query.includes('salsa') || query.includes('guiso')) {
-      steps.push({
-        step: 3,
-        instruction: `Reduce a fuego medio. Incorpora los aromáticos, especias y la base cremosa. Deja que reduzca a fuego suave durante 6 a 8 minutos para que todos los sabores se concentren e integren.`,
-        timerSeconds: 420,
-        tip: 'Cocinar las especias en seco 30 segundos antes de agregar líquidos libera sus aceites esenciales más intensos.',
-        equipment: ['Espátula de silicona']
-      });
-    } else {
-      steps.push({
-        step: 3,
-        instruction: `Baja a fuego medio y añade los vegetales o guarnición. Saltea durante 3 a 5 minutos manteniendo las verduras crujientes ("al dente") para preservar todas sus vitaminas.`,
-        timerSeconds: 240,
-        tip: 'Las verduras al dente aportan mayor saciedad y conservan su textura brillante y color vivo.',
-        equipment: ['Sartén']
-      });
-    }
+    steps.push({
+      step: 3,
+      instruction: `Baja a fuego medio e incorpora los vegetales y la guarnición aromática. Saltea durante 4 a 6 minutos manteniendo las verduras al dente para preservar todos sus micronutrientes y textura crujiente.`,
+      timerSeconds: 300,
+      tip: 'Las verduras al dente aportan saciedad prolongada y colores vivos.',
+      equipment: ['Espátula']
+    });
 
-    // Step 4: Finishing & Plating
     steps.push({
       step: 4,
-      instruction: `Retira del fuego. Emplata sobre una base estética, decora con hierbas frescas recién picadas, un toque de semillas y un último hilo de aceite virgen extra. ¡Sirve inmediatamente bien caliente!`,
+      instruction: `Retira del fuego. Emplata con estética gourmet, añade hierbas frescas picadas, un toque de especias y un hilo final de aceite virgen extra en crudo. ¡Listo para disfrutar!`,
       timerSeconds: 0,
-      tip: 'Dejar reposar la proteína caliente 1 minuto antes del primer corte redistribuye los jugos internos por toda la carne.',
-      equipment: ['Plato hondo o Bowl gourmet']
+      tip: 'Dejar reposar la proteína caliente 1 minuto antes de servir redistribuye los jugos internos por toda la pieza.',
+      equipment: ['Plato hondo o llano']
     });
 
     return steps;

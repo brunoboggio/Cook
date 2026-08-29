@@ -657,60 +657,83 @@ function renderAIPreview(recipe) {
   previewView.style.display = 'block';
 
   previewView.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+    <div style="display: flex; flex-direction: column; gap: 1.25rem; max-height: 75vh; overflow-y: auto; padding-right: 4px;">
       
       <!-- Recipe Card Preview Header -->
-      <div style="display: flex; gap: 1rem; align-items: center;">
-        <img src="${recipe.image}" alt="${recipe.title}" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
-        <div>
-          <span class="badge badge-emerald" style="margin-bottom: 0.35rem;">💪 ${recipe.protein}g Proteína</span>
-          <h3 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #FFF;">${recipe.title}</h3>
-          <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
+      <div style="display: flex; gap: 1.15rem; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 18px;">
+        <div style="position: relative; flex-shrink: 0;">
+          <img id="ai-preview-dish-img" src="${recipe.image}" alt="${recipe.title}" style="width: 95px; height: 95px; border-radius: 16px; object-fit: cover; box-shadow: 0 6px 20px rgba(0,0,0,0.6); border: 1px solid rgba(16, 185, 129, 0.4);" />
+          <button type="button" onclick="regenerateAIPreviewImage()" class="btn btn-ghost btn-sm" style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: 0.68rem; padding: 0.2rem 0.5rem; background: rgba(13, 17, 23, 0.95); border: 1px solid var(--accent-emerald); border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.4);" title="Generar otra variante de foto">
+            🔄 Cambiar Foto
+          </button>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; gap: 0.4rem; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap;">
+            <span class="badge badge-emerald">💪 ${recipe.protein}g Proteína</span>
+            <span class="badge badge-muted">✨ Creada con IA</span>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: #FFF; line-height: 1.3;">${recipe.title}</h3>
+          <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.35rem;">
             ⏱️ ${recipe.prepTime + recipe.cookTime} min · 🔥 ${recipe.calories} kcal · ${recipe.difficulty}
           </div>
         </div>
       </div>
 
-      <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin: 0; background: rgba(255,255,255,0.03); padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid var(--border-subtle);">
+      <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; margin: 0; background: rgba(0,0,0,0.2); padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid var(--border-subtle);">
         ${recipe.description}
       </p>
 
       <!-- Macro Summary Strip -->
       <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center;">
-        <div class="glass-panel" style="padding: 0.5rem;">
+        <div class="glass-panel" style="padding: 0.5rem 0.25rem;">
           <div style="font-size: 0.7rem; color: var(--text-tertiary);">Calorías</div>
-          <div style="font-weight: 700; color: var(--accent-amber);">${recipe.calories}</div>
+          <div style="font-weight: 800; font-size: 1.05rem; color: var(--accent-amber);">${recipe.calories}</div>
         </div>
-        <div class="glass-panel" style="padding: 0.5rem;">
+        <div class="glass-panel" style="padding: 0.5rem 0.25rem;">
           <div style="font-size: 0.7rem; color: var(--text-tertiary);">Proteína</div>
-          <div style="font-weight: 700; color: var(--accent-emerald);">${recipe.protein}g</div>
+          <div style="font-weight: 800; font-size: 1.05rem; color: var(--accent-emerald);">${recipe.protein}g</div>
         </div>
-        <div class="glass-panel" style="padding: 0.5rem;">
+        <div class="glass-panel" style="padding: 0.5rem 0.25rem;">
           <div style="font-size: 0.7rem; color: var(--text-tertiary);">Carbos</div>
-          <div style="font-weight: 700; color: var(--accent-sky);">${recipe.carbs}g</div>
+          <div style="font-weight: 800; font-size: 1.05rem; color: var(--accent-sky);">${recipe.carbs}g</div>
         </div>
-        <div class="glass-panel" style="padding: 0.5rem;">
+        <div class="glass-panel" style="padding: 0.5rem 0.25rem;">
           <div style="font-size: 0.7rem; color: var(--text-tertiary);">Grasas</div>
-          <div style="font-weight: 700; color: var(--accent-violet);">${recipe.fat}g</div>
+          <div style="font-weight: 800; font-size: 1.05rem; color: var(--accent-violet);">${recipe.fat}g</div>
         </div>
       </div>
 
       <!-- Ingredients Sample -->
       <div>
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.5rem;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">
           Ingredientes identificados (${recipe.ingredients.length}):
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-          ${recipe.ingredients.map(i => `<span class="badge badge-muted">${i.name} (${i.amount} ${i.unit})</span>`).join('')}
+          ${recipe.ingredients.map(i => `<span class="badge badge-muted" style="font-size: 0.78rem; padding: 0.35rem 0.65rem; background: rgba(255,255,255,0.06);">${i.name} (${i.amount} ${i.unit})</span>`).join('')}
+        </div>
+      </div>
+
+      <!-- Cooking Steps Preview -->
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">
+          Pasos de preparación (${recipe.steps.length}):
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          ${recipe.steps.map(s => `
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; line-height: 1.45;">
+              <span style="color: var(--accent-emerald); font-weight: 700;">Paso ${s.step}:</span> ${s.instruction}
+              ${s.timerSeconds > 0 ? `<span class="badge badge-amber" style="margin-left: 0.35rem; font-size: 0.7rem; padding: 0.15rem 0.4rem;">⏱️ ${Math.round(s.timerSeconds / 60)} min</span>` : ''}
+            </div>
+          `).join('')}
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
         <button class="btn btn-ghost btn-sm" onclick="openAICreatorModal()">🔄 Crear Otra</button>
-        <div style="display: flex; gap: 0.75rem;">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
           <button class="btn btn-secondary" onclick="saveAndAssignToPlanner()">📅 Asignar al Menú</button>
-          <button class="btn btn-primary btn-lg" onclick="saveAndCloseAICreator()" style="box-shadow: 0 0 20px var(--accent-emerald-glow);">
+          <button id="btn-save-ai-recipe-main" class="btn btn-primary btn-lg" onclick="saveAndCloseAICreator()" style="box-shadow: 0 0 20px var(--accent-emerald-glow);">
             💾 Guardar en mi Catálogo
           </button>
         </div>
@@ -720,31 +743,76 @@ function renderAIPreview(recipe) {
   `;
 }
 
+window.regenerateAIPreviewImage = function() {
+  if (!tempGeneratedRecipe) return;
+  const newSeed = Math.floor(Math.random() * 999999);
+  const newImgUrl = window.aiRecipeGenerator.generateAIImageUrl(tempGeneratedRecipe.title, newSeed);
+  tempGeneratedRecipe.image = newImgUrl;
+  
+  const imgEl = document.getElementById('ai-preview-dish-img');
+  if (imgEl) {
+    imgEl.src = newImgUrl;
+    imgEl.style.animation = 'pulseAmber 0.8s ease';
+    setTimeout(() => { imgEl.style.animation = ''; }, 800);
+  }
+  if (window.showToast) window.showToast('🎨 Nueva variante fotográfica generada con IA', 'sky');
+};
+
 window.saveAndCloseAICreator = async function() {
   if (!tempGeneratedRecipe) return;
-  const isDataUrl = tempGeneratedRecipe.image && tempGeneratedRecipe.image.startsWith('data:');
-  if (isDataUrl && window.showToast) {
-    window.showToast('☁️ Guardando receta y subiendo imagen a Firebase Cloud Storage...', 'sky');
+  
+  const saveBtn = document.getElementById('btn-save-ai-recipe-main');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = '☁️ Guardando en la nube...';
   }
-  fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
-  closeAICreatorModal();
-  if (window.soundFX) window.soundFX.playFanfare();
-  window.showToast(`✨ Receta "${tempGeneratedRecipe.title}" guardada en tu catálogo`, 'emerald');
-  renderRecipes();
+
+  try {
+    // 1. Save in local storage & sync catalog
+    fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
+
+    // 2. Persist to Firebase Cloud Firestore & Storage
+    if (window.firebaseDB && typeof window.firebaseDB.saveRecipe === 'function') {
+      await window.firebaseDB.saveRecipe(tempGeneratedRecipe);
+    }
+
+    closeAICreatorModal();
+    if (window.soundFX) window.soundFX.playFanfare();
+    window.showToast(`✨ ¡Receta "${tempGeneratedRecipe.title}" guardada y sincronizada en Firebase!`, 'emerald');
+    renderRecipes();
+  } catch (err) {
+    console.error('Error saving AI recipe:', err);
+    fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
+    closeAICreatorModal();
+    window.showToast(`✨ Receta guardada localmente`, 'emerald');
+    renderRecipes();
+  }
 };
 
 window.saveAndAssignToPlanner = async function() {
   if (!tempGeneratedRecipe) return;
-  const isDataUrl = tempGeneratedRecipe.image && tempGeneratedRecipe.image.startsWith('data:');
-  if (isDataUrl && window.showToast) {
-    window.showToast('☁️ Guardando receta y subiendo imagen a Firebase Cloud Storage...', 'sky');
+
+  try {
+    // 1. Save in local storage & assign slot
+    fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
+    fridgeStore.setMealSlot('day_1', 'lunch', tempGeneratedRecipe.id);
+
+    // 2. Persist to Firebase Cloud Firestore & Storage
+    if (window.firebaseDB && typeof window.firebaseDB.saveRecipe === 'function') {
+      await window.firebaseDB.saveRecipe(tempGeneratedRecipe);
+    }
+
+    closeAICreatorModal();
+    if (window.soundFX) window.soundFX.playFanfare();
+    window.showToast(`✨ ¡Receta guardada en Firebase y asignada al Día 1!`, 'emerald');
+    renderRecipes();
+  } catch (err) {
+    console.error('Error saving and assigning AI recipe:', err);
+    fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
+    fridgeStore.setMealSlot('day_1', 'lunch', tempGeneratedRecipe.id);
+    closeAICreatorModal();
+    renderRecipes();
   }
-  fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
-  fridgeStore.setMealSlot('day_1', 'lunch', tempGeneratedRecipe.id);
-  closeAICreatorModal();
-  if (window.soundFX) window.soundFX.playFanfare();
-  window.showToast(`✨ Receta guardada y asignada al Día 1 en tu planificador`, 'emerald');
-  renderRecipes();
 };
 
 window.deleteCustomRecipe = function(recipeId) {
