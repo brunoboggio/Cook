@@ -200,6 +200,12 @@
     display: none !important;
   }
 
+  /* Keep the header to one reliable touch target: the menu. Its page-specific
+     primary action remains available inside the drawer. */
+  .nav-actions > .btn:not(.nav-mobile-toggle) {
+    display: none !important;
+  }
+
   .nav-actions .btn-icon {
     width: 36px !important;
     height: 36px !important;
@@ -265,6 +271,13 @@
     border-color: rgba(16, 185, 129, 0.4) !important;
     color: #34D399 !important;
     box-shadow: 0 0 20px rgba(16, 185, 129, 0.2) !important;
+  }
+
+  .mobile-drawer-ai-create {
+    width: min(100%, 320px);
+    min-height: 48px;
+    margin-top: 0.25rem;
+    justify-content: center;
   }
 
   .mobile-drawer-close {
@@ -576,15 +589,14 @@
      D. URL 3: PRICES.HTML (Precios de Insumos en $ ARS)
      ------------------------------------------------------------------------ */
   /* Action Buttons Grid in Hero */
-  .prices-hero-actions,
-  section:first-of-type > div:first-child > div:last-child {
+  .prices-hero-actions {
     width: 100% !important;
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 0.5rem !important;
   }
 
-  section:first-of-type > div:first-child > div:last-child > a.btn-primary {
+  .prices-hero-actions > a.btn-primary {
     grid-column: 1 / -1 !important;
     width: 100% !important;
     justify-content: center !important;
@@ -1012,6 +1024,15 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ==========================================================================
    3. EXTRA COMPACT SMARTPHONES (max-width: 400px)
    ========================================================================== */
@@ -1041,8 +1062,7 @@
     grid-template-columns: 1fr !important;
   }
 
-  .prices-hero-actions,
-  section:first-of-type > div:first-child > div:last-child {
+  .prices-hero-actions {
     grid-template-columns: 1fr !important;
   }
 
@@ -1112,4 +1132,3 @@
     -webkit-overflow-scrolling: touch !important;
   }
 }
-

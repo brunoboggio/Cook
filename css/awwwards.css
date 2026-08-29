@@ -1413,29 +1413,6 @@
   width: 100% !important;
 }
 
-@media (min-width: 1100px) {
-  .planner-week-grid.grid-days-5,
-  #planner-grid-container.single-week-layout.grid-days-5 {
-    grid-template-columns: repeat(5, 1fr) !important;
-  }
-  .planner-week-grid.grid-days-7,
-  #planner-grid-container.single-week-layout.grid-days-7 {
-    grid-template-columns: repeat(7, 1fr) !important;
-  }
-  .planner-week-grid.grid-days-3,
-  #planner-grid-container.single-week-layout.grid-days-3 {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-  .planner-week-grid.grid-days-4,
-  #planner-grid-container.single-week-layout.grid-days-4 {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
-  .planner-week-grid.grid-days-6,
-  #planner-grid-container.single-week-layout.grid-days-6 {
-    grid-template-columns: repeat(6, 1fr) !important;
-  }
-}
-
 /* Meal Slot Card Components in Planner */
 .meal-slot-card {
   background: rgba(26, 32, 44, 0.65);

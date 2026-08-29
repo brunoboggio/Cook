@@ -40,7 +40,7 @@
       <button class="btn-icon audio-toggle-btn" title="Activar/Silenciar Audio">🔊</button>
       <button class="btn-icon theme-toggle-btn" title="Cambiar Tema">☀️</button>
       <a href="planner.html#cart-section" class="btn btn-primary btn-sm">🛒 Mi Carrito</a>
-      <button class="btn-icon nav-mobile-toggle" style="display: none;">☰</button>
+      <button class="btn-icon nav-mobile-toggle" type="button" aria-label="Abrir menú de navegación" aria-controls="mobile-drawer" aria-expanded="false" style="display: none;">☰</button>
     </div>
   </header>
 
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Quick Action Buttons -->
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+        <div class="prices-hero-actions" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
           <button class="btn btn-secondary" onclick="window.promptBulkInflation()" style="border-radius: 12px; font-weight: 700; gap: 0.5rem; display: flex; align-items: center;">
             📈 Ajuste Rápido %
           </button>
