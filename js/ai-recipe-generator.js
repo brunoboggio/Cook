@@ -126,51 +126,13 @@ class AIRecipeGenerator {
   async generateAIImageUrl(dishName, customPrompt = null, seed = null) {
     const settings = this.getAISettings();
     const cleanSeed = seed || Math.floor(Math.random() * 999999);
-    const culinaryPrompt = customPrompt || `Award-winning professional gourmet food photography of ${dishName}, restaurant culinary plating on ceramic dish, cinematic warm lighting, sharp focus, 8k resolution, macro food styling`;
+    
+    // Construct rich culinary gastronomy prompt optimized for Nano Banana 2
+    let baseDish = dishName ? dishName.trim() : 'Gourmet Culinary Dish';
+    const culinaryDetails = customPrompt ? `${customPrompt}. ` : '';
+    const culinaryPrompt = `Award-winning professional gourmet food photography of ${baseDish}. ${culinaryDetails}Exquisite restaurant culinary plating, vibrant colors, appetizing texture, warm soft cinematic studio lighting, shallow depth of field, 8k resolution, macro culinary magazine styling`;
 
-    // 1. Try Google AI Studio's native Nano Banana 2 (gemini-3.1-flash-image) if API Key exists
-    if (settings.apiKey && settings.apiKey.trim().length > 10) {
-      const apiKey = settings.apiKey.trim();
-      const nanoBananaModels = [
-        'gemini-3.1-flash-image',
-        'gemini-3.1-flash-image-preview',
-        'gemini-3.1-flash-lite-image',
-        'gemini-3-pro-image',
-        'gemini-2.5-flash-image'
-      ];
-
-      for (const model of nanoBananaModels) {
-        try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-goog-api-key': apiKey
-            },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: culinaryPrompt }] }],
-              generationConfig: { responseModalities: ["IMAGE"] }
-            })
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            const candidate = data.candidates?.[0];
-            const part = candidate?.content?.parts?.find(p => p.inline_data || p.inlineData);
-            const inline = part?.inline_data || part?.inlineData;
-            if (inline && inline.data) {
-              console.log(`🍌 Nano Banana 2 (${model}) generó la imagen con éxito`);
-              return `data:${inline.mime_type || 'image/jpeg'};base64,${inline.data}`;
-            }
-          }
-        } catch (err) {
-          // Continue to fallback
-        }
-      }
-    }
-
-    // 2. High-speed Pollinations AI image generator with nano-banana-2 / flux
+    // High-speed Nano Banana 2 gastronomic image engine
     const model = settings.imageModel || 'nano-banana-2';
     const cleanPrompt = encodeURIComponent(culinaryPrompt);
     return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
