@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recetas Proteicas & Creador con IA — FridgeFlow</title>
+  <meta name="description" content="Explora recetas altas en proteína o crea nuevas recetas al instante con Inteligencia Artificial y cálculos exactos de macronutrientes.">
+  <meta name="theme-color" content="#0D1117">
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="css/main.css?v=3.4">
+  <link rel="stylesheet" href="css/awwwards.css?v=3.4">
+  <link rel="stylesheet" href="css/responsive.css?v=3.4">
+</head>
+<body>
+
+  <div class="ambient-mesh"></div>
+
+  <!-- Floating Navigation Header -->
+  <header class="navbar-floating" id="navbar">
+    <a href="planner.html" class="nav-brand">
+      <div class="brand-icon-wrapper">🥑</div>
+      <span>Fridge<span style="color: var(--accent-emerald);">Flow</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="planner.html" class="nav-link">Planificador Semanal</a></li>
+      <li><a href="recipes.html" class="nav-link active">Recetas Proteicas</a></li>
+      <li><a href="prices.html" class="nav-link">Precios de Insumos</a></li>
+      <li><a href="planner.html#cart-section" class="nav-link">Lista de Compra</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn-icon trigger-search-modal" title="Buscador Universal (Ctrl+K)">🔍</button>
+      <button class="btn-icon trigger-backup-modal" title="Copia de Seguridad y Migración (Ctrl+B)">💾</button>
+      <button class="btn-icon audio-toggle-btn" title="Activar/Silenciar Audio">🔊</button>
+      <button class="btn-icon theme-toggle-btn" title="Cambiar Tema">☀️</button>
+      <button id="btn-header-ai-create" class="btn btn-primary btn-sm" onclick="openAICreatorModal()">✨ Crear con IA</button>
+      <button class="btn-icon nav-mobile-toggle" style="display: none;">☰</button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-nav-drawer" id="mobile-drawer">
+    <button class="btn-icon mobile-drawer-close" id="mobile-drawer-close" style="position: absolute; top: 1.5rem; right: 1.5rem;">✕</button>
+    <a href="planner.html" class="nav-link">Planificador Semanal</a>
+    <a href="recipes.html" class="nav-link active">Recetas Proteicas</a>
+    <a href="prices.html" class="nav-link">Precios de Insumos</a>
+    <a href="planner.html#cart-section" class="nav-link">Lista de Compra</a>
+    <div style="display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; justify-content: center;">
+      <button class="btn-icon trigger-search-modal" title="Buscador Universal">🔍</button>
+      <button class="btn-icon trigger-backup-modal" title="Copia de Seguridad">💾</button>
+      <button class="btn-icon audio-toggle-btn" title="Audio">🔊</button>
+      <button class="btn-icon theme-toggle-btn" title="Tema">☀️</button>
+    </div>
+  </div>
+
+  <main class="container" style="padding-top: 7.5rem; padding-bottom: 6rem;">
+    
+    <!-- PAGE HEADER -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1.5rem;">
+      <div>
+        <span class="badge badge-emerald" style="margin-bottom: 0.5rem;">Catálogo Gourmet & Motor IA</span>
+        <h1 style="font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.03em; margin: 0 0 0.5rem 0;">Recetas Proteicas & Creador IA</h1>
+        <p style="font-size: 1rem; color: var(--text-secondary); max-width: 580px; margin: 0;">
+          Explora 37+ recetas completas o <strong>crea cualquier plato nuevo con Inteligencia Artificial</strong> calculando macros, ingredientes y fotografía al instante.
+        </p>
+      </div>
+
+      <!-- Action Group: Create with AI & Sorting -->
+      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <button id="btn-open-ai-creator" class="btn btn-primary btn-lg" onclick="openAICreatorModal()" style="box-shadow: 0 0 25px var(--accent-emerald-glow); font-weight: 700;">
+          ✨ + Crear Receta con IA
+        </button>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 0.85rem; color: var(--text-tertiary);">Ordenar:</span>
+          <select id="recipes-sort-select" class="form-control" style="width: auto; padding: 0.5rem 1rem;">
+            <option value="protein">💪 Mayor Proteína (g)</option>
+            <option value="match">✨ Mayor Compatibilidad %</option>
+            <option value="time">⏱️ Menor Tiempo Total</option>
+            <option value="calories">🔥 Menos Calorías</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY & DIET FILTER TABS -->
+    <div class="glass-panel" style="margin-bottom: 2.5rem; padding: 1.25rem;">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        
+        <!-- Live Search Row -->
+        <div style="position: relative; width: 100%;">
+          <input type="text" 
+                 id="recipes-live-search" 
+                 class="form-control" 
+                 placeholder="🔍 Buscar receta por nombre, ingredientes o etiquetas (ej. Pollo, Avena, Salmón, Pasta)..." 
+                 style="padding-left: 1.25rem; border-radius: 14px; background: rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.12);" />
+        </div>
+
+        <!-- Category Row -->
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-right: 0.5rem;">Momento:</span>
+          <button class="btn btn-primary btn-sm recipe-cat-filter active" data-cat="all">Todos</button>
+          <button class="btn btn-ghost btn-sm recipe-cat-filter" data-cat="desayuno">☀️ Desayunos</button>
+          <button class="btn btn-ghost btn-sm recipe-cat-filter" data-cat="almuerzo">🍲 Almuerzos</button>
+          <button class="btn btn-ghost btn-sm recipe-cat-filter" data-cat="cena">🌙 Cenas</button>
+          <button class="btn btn-ghost btn-sm recipe-cat-filter" data-cat="custom" style="color: var(--accent-emerald);">✨ Creadas con IA</button>
+        </div>
+
+        <!-- Dietary Preference Pills -->
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-right: 0.5rem;">Filtros:</span>
+          <button class="badge badge-emerald recipe-diet-filter active" data-diet="all" style="cursor: pointer; padding: 0.35rem 0.75rem;">Todas las dietas</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="favoritas" style="cursor: pointer; padding: 0.35rem 0.75rem;">❤️ Mis Favoritas</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="Rico en Proteína" style="cursor: pointer; padding: 0.35rem 0.75rem;">💪 High Protein</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="UltraProtein" style="cursor: pointer; padding: 0.35rem 0.75rem;">🔥 Proteína > 40g</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="Express" style="cursor: pointer; padding: 0.35rem 0.75rem;">⚡ Express ≤ 20min</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="Vegetariano" style="cursor: pointer; padding: 0.35rem 0.75rem;">🌱 Vegetariano</button>
+          <button class="badge badge-muted recipe-diet-filter" data-diet="Creada con IA" style="cursor: pointer; padding: 0.35rem 0.75rem;">✨ Recetas IA</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RECIPES GRID CONTAINER -->
+    <div id="recipes-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.75rem;">
+      <!-- Populated reactively by JS -->
+    </div>
+
+  </main>
+
+  <!-- AI RECIPE CREATOR MODAL -->
+  <div id="ai-creator-modal" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 660px; padding: 2rem; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.3); background: linear-gradient(145deg, rgba(24, 29, 38, 0.95) 0%, rgba(13, 17, 23, 0.98) 100%);">
+      <button class="btn-icon modal-close" onclick="closeAICreatorModal()">✕</button>
+
+      <!-- Step 1: Form View -->
+      <div id="ai-creator-form-view">
+        <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.75rem;">
+          <div style="font-size: 2rem; width: 50px; height: 50px; border-radius: 14px; background: rgba(16, 185, 129, 0.15); display: grid; place-items: center; border: 1px solid rgba(16, 185, 129, 0.3);">
+            ✨
+          </div>
+          <div>
+            <h3 style="font-size: 1.35rem; font-weight: 800; margin: 0 0 0.2rem 0;">Chef IA: Crear Nueva Receta</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Escribe el plato que deseas y la IA investigará ingredientes, macros y fotos.</p>
+          </div>
+        </div>
+
+        <form id="ai-creator-form" onsubmit="handleAICreateSubmit(event)" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+              Nombre del Plato o Idea Gastronómica <span style="font-size: 0.78rem; color: var(--text-tertiary); font-weight: normal;">(o describe la foto)</span>
+            </label>
+            <input type="text" id="ai-dish-name" class="form-control" placeholder="Ej: Pollo al curry, Poke Bowl de Salmón, o déjalo en blanco si subes foto..." />
+          </div>
+
+          <!-- Image / Screenshot Upload & Paste Zone -->
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span>📸 Foto o Captura de Pantalla <span style="font-size: 0.76rem; color: var(--text-tertiary); font-weight: normal;">(Opcional · puedes arrastrar o pegar con Ctrl+V)</span></span>
+              <span id="ai-image-status" style="font-size: 0.75rem; color: #34D399; display: none; font-weight: 700;">✓ Foto cargada</span>
+            </label>
+
+            <div id="ai-image-dropzone" onclick="document.getElementById('ai-dish-image-file').click()" style="border: 2px dashed rgba(16, 185, 129, 0.35); border-radius: 14px; padding: 1rem 1.25rem; text-align: center; background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.2s ease;">
+              <input type="file" id="ai-dish-image-file" accept="image/*" style="display: none;" onchange="handleAIImageSelect(event)" />
+              
+              <!-- Placeholder State -->
+              <div id="ai-image-placeholder">
+                <div style="font-size: 1.6rem; margin-bottom: 0.25rem;">📷</div>
+                <div style="font-size: 0.88rem; font-weight: 600; color: #FFF;">
+                  Haz clic para subir una foto / captura o arrástrala aquí
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: 0.2rem;">
+                  También puedes copiar una captura al portapapeles y pulsar <strong>Ctrl+V</strong>
+                </div>
+              </div>
+
+              <!-- Preview State -->
+              <div id="ai-image-preview-container" style="display: none; align-items: center; justify-content: space-between; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                  <img id="ai-image-preview-img" src="" alt="Captura de plato" style="width: 58px; height: 58px; border-radius: 10px; object-fit: cover; border: 1px solid var(--accent-emerald);" />
+                  <div style="text-align: left;">
+                    <div id="ai-image-preview-name" style="font-weight: 700; font-size: 0.88rem; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;">captura.jpg</div>
+                    <div style="font-size: 0.74rem; color: #34D399;">✨ Imagen lista para análisis de Chef IA</div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="removeAIImage(event)" style="color: #F87171; font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Eliminar imagen">
+                  ✕ Quitar
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+              Notas o Preferencias Opcionales
+            </label>
+            <textarea id="ai-dish-notes" class="form-control" rows="2" placeholder="Ej: Que tenga más de 45g de proteína, sin gluten, estilo mediterráneo o para cenar ligero..."></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+              Enfoque Nutricional Deseado
+            </label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <label class="badge badge-emerald" style="cursor: pointer; display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem;">
+                <input type="radio" name="ai-focus-radio" value="protein" checked /> 💪 Hiperproteico
+              </label>
+              <label class="badge badge-muted" style="cursor: pointer; display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem;">
+                <input type="radio" name="ai-focus-radio" value="balanced" /> 🥗 Equilibrado
+              </label>
+              <label class="badge badge-muted" style="cursor: pointer; display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem;">
+                <input type="radio" name="ai-focus-radio" value="keto" /> 🥑 Low Carb / Keto
+              </label>
+              <label class="badge badge-muted" style="cursor: pointer; display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem;">
+                <input type="radio" name="ai-focus-radio" value="vegetarian" /> 🌱 Vegetariano
+              </label>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+            <button type="button" class="btn btn-ghost" onclick="closeAICreatorModal()">Cancelar</button>
+            <button type="submit" id="btn-submit-ai-generate" class="btn btn-primary btn-lg" style="box-shadow: 0 0 20px var(--accent-emerald-glow); font-weight: 700;">
+              ⚡ Generar Receta con IA
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: Live Generation Animation View -->
+      <div id="ai-creator-loading-view" style="display: none; text-align: center; padding: 2.5rem 1rem;">
+        <div style="font-size: 3.5rem; margin-bottom: 1rem; animation: pulseAmber 1.4s infinite;">🤖✨</div>
+        <h3 id="ai-loading-status-title" style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem;">Investigando plato en la red...</h3>
+        <p id="ai-loading-status-text" style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.75rem;">Analizando perfiles aromáticos y equilibrio de proteínas...</p>
+        
+        <!-- Progress Bar -->
+        <div style="width: 100%; max-width: 440px; height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; margin: 0 auto; overflow: hidden;">
+          <div id="ai-loading-bar-fill" style="width: 25%; height: 100%; background: var(--grad-brand); border-radius: 999px; transition: width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: Success & Live Preview View -->
+      <div id="ai-creator-preview-view" style="display: none;">
+        <!-- Populated dynamically upon generation -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Master Footer -->
+  <footer class="footer-master">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+      <a href="planner.html" class="nav-brand" style="text-decoration: none;">
+        <div class="brand-icon-wrapper">🥑</div>
+        <span>Fridge<span style="color: var(--accent-emerald);">Flow</span></span>
+      </a>
+      <div style="font-size: 0.85rem; color: var(--text-tertiary);">
+        Diseñado con pasión por la gastronomía inteligente y el planeta · © 2026 FridgeFlow OS.
+      </div>
+      <div style="display: flex; gap: 1.25rem; font-size: 0.85rem; color: var(--text-secondary);">
+        <a href="planner.html">Planificador</a>
+        <a href="recipes.html">Recetas</a>
+        <a href="prices.html">Precios ARS</a>
+        <a href="planner.html#cart-section">Lista de Compra</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=3.4"></script>
+  <script src="js/audio-engine.js?v=3.4"></script>
+  <script src="js/storage.js?v=3.4"></script>
+  <script src="js/ai-recipe-generator.js?v=3.4"></script>
+  <script src="js/main.js?v=3.4"></script>
+  <script src="js/recipes.js?v=3.4"></script>
+</body>
+</html>

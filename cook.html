@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modo Cocina Chef — Paso a Paso Detallado — FridgeFlow</title>
+  <meta name="description" content="Modo cocina interactivo paso a paso con lista completa de preparación, ingredientes por paso, temporizadores inteligentes y vista de hoja completa.">
+  <meta name="theme-color" content="#0D1117">
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="css/main.css?v=3.4">
+  <link rel="stylesheet" href="css/awwwards.css?v=3.4">
+  <link rel="stylesheet" href="css/responsive.css?v=3.4">
+</head>
+<body class="cook-mode-body">
+
+  <div class="ambient-mesh"></div>
+
+  <!-- COOK HUD TOP BAR -->
+  <header class="cook-header-bar">
+    <div class="cook-header-inner">
+      
+      <!-- Back & Navigation -->
+      <div class="cook-header-left">
+        <a href="planner.html" class="btn btn-ghost btn-sm" title="Volver al Planificador">
+          ← 📋 Planificador
+        </a>
+        <a href="recipes.html" class="btn btn-ghost btn-sm" title="Ver Catálogo de Recetas">
+          🍳 Recetas
+        </a>
+        <a href="prices.html" class="btn btn-ghost btn-sm" title="Gestionar Precios de Insumos">
+          💰 Precios ARS
+        </a>
+      </div>
+
+      <!-- Current Recipe Summary & Quick Checkpoints -->
+      <div class="cook-header-center">
+        <div class="cook-header-title-row">
+          <img id="hud-recipe-thumb" src="assets/images/recipe_mediterranean_pasta.jpg" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="Thumbnail" class="cook-header-thumb" />
+          <div>
+            <h1 id="hud-recipe-title" class="cook-header-title">Cargando Receta...</h1>
+            <div class="cook-header-meta">
+              <span id="hud-recipe-category" class="badge badge-emerald">Almuerzo</span>
+              <span id="hud-recipe-time" style="color: var(--text-secondary); font-size: 0.8rem;">⏱️ 25 min</span>
+              <span style="color: var(--text-tertiary);">·</span>
+              <span id="hud-recipe-protein" style="color: var(--accent-emerald); font-weight: 700; font-size: 0.8rem;">💪 38g Prot</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assistant Controls & View Modes -->
+      <div class="cook-header-right">
+        <!-- View Mode Switcher -->
+        <div class="cook-view-segmented" role="tablist">
+          <button id="tab-btn-sheet" class="cook-view-tab active" onclick="switchCookView('sheet')" title="Ver todos los pasos desplegados">
+            📜 Vista Completa
+          </button>
+          <button id="tab-btn-focus" class="cook-view-tab" onclick="switchCookView('focus')" title="Vista guiada paso a paso">
+            🎯 Paso a Paso
+          </button>
+        </div>
+
+        <div class="cook-audio-tools">
+          <button id="btn-toggle-wake-lock" class="btn btn-secondary btn-sm" title="Mantener pantalla activa mientras cocinas" onclick="toggleWakeLock()">
+            📱 Pantalla Activa
+          </button>
+          <button id="btn-toggle-voice-narration" class="btn btn-secondary btn-sm" title="Narrador por voz en español">
+            🎙️ Voz
+          </button>
+          <button id="btn-toggle-soundscape" class="btn btn-secondary btn-sm" title="Sonido ambiente de cocina">
+            🎵 Bistro
+            <span class="soundscape-bars" id="soundscape-bars-indicator" style="display: none;">
+              <span class="soundscape-bar"></span>
+              <span class="soundscape-bar"></span>
+              <span class="soundscape-bar"></span>
+              <span class="soundscape-bar"></span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Stepper Progress Tracker -->
+    <div class="cook-stepper-strip">
+      <div id="cook-stepper-pills" class="cook-stepper-pills">
+        <!-- Rendered dynamically: Step 1, Step 2, etc. with checkmarks -->
+      </div>
+      <div class="cook-progress-bar-container">
+        <div id="hud-progress-fill" class="cook-progress-bar-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN COOK HUD CONTENT -->
+  <main class="container-fluid cook-main-viewport">
+    
+    <!-- VIEW 1: FOCUS STEP-BY-STEP (2 Columns) -->
+    <div id="cook-view-focus" class="cook-view-container">
+      <div class="cook-grid-layout">
+        
+        <!-- LEFT COLUMN: RECIPE OVERVIEW & MISE EN PLACE CHECKLIST -->
+        <aside class="cook-prep-sidebar">
+          
+          <!-- Recipe Quick Card -->
+          <div class="cook-card cook-card-hero">
+            <div class="cook-card-hero-img-wrap">
+              <img id="sidebar-recipe-img" src="assets/images/recipe_mediterranean_pasta.jpg" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="Plato" class="cook-card-hero-img" />
+              <div class="cook-card-hero-overlay">
+                <span id="sidebar-difficulty-badge" class="badge badge-amber">Fácil</span>
+                <span id="sidebar-servings-badge" class="badge badge-emerald">2 Porciones</span>
+              </div>
+            </div>
+            <div style="padding: 1.25rem;">
+              <div id="sidebar-macros-row" class="cook-macros-row">
+                <div class="cook-macro-chip">
+                  <span class="cook-macro-label">Calorías</span>
+                  <span id="sidebar-calories-val" class="cook-macro-val">580 kcal</span>
+                </div>
+                <div class="cook-macro-chip highlight">
+                  <span class="cook-macro-label">Proteína</span>
+                  <span id="sidebar-protein-val" class="cook-macro-val">38g</span>
+                </div>
+                <div class="cook-macro-chip">
+                  <span class="cook-macro-label">Carbos</span>
+                  <span id="sidebar-carbs-val" class="cook-macro-val">52g</span>
+                </div>
+                <div class="cook-macro-chip">
+                  <span class="cook-macro-label">Grasas</span>
+                  <span id="sidebar-fat-val" class="cook-macro-val">24g</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mise en Place / Ingredientes Checklist -->
+          <div class="cook-card">
+            <div class="cook-card-header">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🥑</span>
+                <h3 class="cook-card-title">Mise en Place (Ingredientes)</h3>
+              </div>
+              <span id="ingredients-checked-counter" class="badge badge-emerald" style="font-size: 0.75rem;">0/0 Listos</span>
+            </div>
+            <p class="cook-card-desc">
+              Marca los ingredientes a medida que los tengas pesados y listos en tu mesa:
+            </p>
+            <div id="sidebar-ingredients-checklist" class="cook-checklist">
+              <!-- Rendered dynamically with checkboxes -->
+            </div>
+          </div>
+
+          <!-- Utensilios Requeridos -->
+          <div class="cook-card">
+            <div class="cook-card-header">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🔪</span>
+                <h3 class="cook-card-title">Utensilios & Equipamiento</h3>
+              </div>
+            </div>
+            <div id="sidebar-equipment-list" class="cook-equipment-tags">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Hoja de Ruta de Pasos (Timeline interactivo) -->
+          <div class="cook-card">
+            <div class="cook-card-header">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🗺️</span>
+                <h3 class="cook-card-title">Hoja de Ruta de Pasos</h3>
+              </div>
+            </div>
+            <div id="sidebar-roadmap-timeline" class="cook-roadmap-list">
+              <!-- Rendered dynamically: clickable steps with check status -->
+            </div>
+          </div>
+
+          <!-- Chef Pro Secret -->
+          <div class="cook-card cook-card-chef-secret">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <span>👨‍🍳</span>
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: #FCD34D;">Nota Maestra del Chef</h4>
+            </div>
+            <p id="sidebar-chef-notes" style="font-size: 0.85rem; color: #FEF3C7; line-height: 1.5; margin: 0;">
+              -
+            </p>
+          </div>
+
+        </aside>
+
+        <!-- RIGHT COLUMN: MASTER ACTIVE STEP WORKSTATION -->
+        <section class="cook-workstation-main">
+          
+          <!-- Master Step Card -->
+          <div class="cook-step-master-card glow-card">
+            
+            <!-- Step Header & Category/Time -->
+            <div class="cook-step-master-header">
+              <div class="step-badge-group">
+                <span class="step-num-pill" id="step-indicator-badge">PASO 1 DE 4</span>
+                <span id="step-phase-tag" class="step-phase-pill">PREPARACIÓN & CORTE</span>
+              </div>
+              <div id="step-estimated-time-badge" class="step-time-badge">
+                ⏱️ 5 minutos
+              </div>
+            </div>
+
+            <!-- Detailed Step Instruction -->
+            <div class="cook-instruction-wrapper">
+              <div class="cook-instruction-lead-label">QUÉ HACER EN ESTE PASO:</div>
+              <div class="cook-instruction-hero-text" id="step-instruction-text">
+                Cargando instrucción detallada...
+              </div>
+            </div>
+
+            <!-- Ingredients specifically needed for THIS step -->
+            <div id="step-specific-ingredients-section" class="cook-step-specific-section">
+              <div class="cook-step-section-heading">
+                <span>🥣</span>
+                <span>Ingredientes necesarios para este paso:</span>
+              </div>
+              <div id="step-specific-ingredients-list" class="cook-step-ingredients-pills">
+                <!-- Rendered dynamically with amounts -->
+              </div>
+            </div>
+
+            <!-- Pro Chef Tip for this step -->
+            <div class="cook-step-tip-panel" id="step-tip-container">
+              <div class="cook-step-tip-icon">💡</div>
+              <div class="cook-step-tip-body">
+                <div class="cook-step-tip-title">Técnica & Consejo del Chef:</div>
+                <div id="step-tip-text" class="cook-step-tip-content">
+                  Tip culinario
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Smart Countdown Timer -->
+            <div id="step-timer-wrapper" class="cook-smart-timer-box">
+              <div class="cook-timer-header">
+                <span class="badge badge-emerald" style="font-size: 0.75rem;">Temporizador del Paso</span>
+                <span id="timer-status-badge" style="font-size: 0.8rem; color: var(--text-secondary);">Listo para iniciar</span>
+              </div>
+
+              <div class="cook-timer-body">
+                <!-- SVG Circular Progress Ring -->
+                <div class="circular-timer-wrapper">
+                  <svg class="circular-timer-svg" viewBox="0 0 120 120">
+                    <circle class="circular-timer-bg" cx="60" cy="60" r="54"></circle>
+                    <circle class="circular-timer-progress" id="timer-progress-circle" cx="60" cy="60" r="54"></circle>
+                  </svg>
+                  <div class="timer-time-display" id="timer-time-text">00:00</div>
+                </div>
+
+                <!-- Timer Controls & Quick Adjustment Buttons -->
+                <div class="cook-timer-controls">
+                  <div class="cook-timer-main-btn-row">
+                    <button id="btn-timer-play-pause" class="btn btn-primary btn-lg" style="flex: 1; font-weight: 700;">
+                      ▶️ Iniciar Temporizador
+                    </button>
+                    <button id="btn-timer-reset" class="btn btn-secondary btn-lg" title="Reiniciar tiempo original">
+                      ↺
+                    </button>
+                  </div>
+                  
+                  <div class="cook-timer-adjust-row">
+                    <button class="btn btn-ghost btn-sm" onclick="adjustTimer(-30)">-30s</button>
+                    <button class="btn btn-ghost btn-sm" onclick="adjustTimer(+30)">+30s</button>
+                    <button class="btn btn-ghost btn-sm" onclick="adjustTimer(+60)">+1 min</button>
+                    <button class="btn btn-ghost btn-sm" onclick="adjustTimer(+180)">+3 min</button>
+                  </div>
+                  
+                  <div class="cook-timer-hint">
+                    Presiona <kbd class="cook-kbd">Barra Espaciadora</kbd> para pausar o reanudar
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step Completion Toggle & Master Navigation Bar -->
+            <div class="cook-step-navigation-footer">
+              <button id="btn-prev-step" class="btn btn-secondary btn-lg cook-nav-btn" onclick="prevStep()">
+                ← Paso Anterior
+              </button>
+
+              <button id="btn-toggle-step-done" class="btn btn-secondary btn-lg cook-mark-done-btn" onclick="toggleCurrentStepDone()">
+                <span id="step-done-icon">⭕</span>
+                <span id="step-done-label">Marcar como Hecho</span>
+              </button>
+
+              <button id="btn-next-step" class="btn btn-primary btn-lg cook-nav-btn primary-action" onclick="nextStep()">
+                Siguiente Paso →
+              </button>
+            </div>
+
+            <!-- Hands-free / Keyboard Navigation Guidance -->
+            <div class="cook-keyboard-shortcuts-bar">
+              <span>⌨️ Atajos: <kbd class="cook-kbd">←</kbd> <kbd class="cook-kbd">→</kbd> Cambiar Paso · <kbd class="cook-kbd">Espacio</kbd> Timer · <kbd class="cook-kbd">V</kbd> Voz · <kbd class="cook-kbd">M</kbd> Vista Completa</span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <!-- VIEW 2: FULL RECIPE SHEET (All Steps Unfolded View) -->
+    <div id="cook-view-sheet" class="cook-view-container active">
+      <div class="cook-sheet-wrapper">
+        
+        <!-- Sheet Header Summary -->
+        <div class="cook-sheet-header-card glow-card">
+          <div class="cook-sheet-header-grid">
+            <img id="sheet-recipe-img" src="assets/images/recipe_mediterranean_pasta.jpg" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="Plato" class="cook-sheet-hero-img" />
+            <div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <span id="sheet-category-badge" class="badge badge-emerald">Almuerzo</span>
+                <span id="sheet-difficulty-badge" class="badge badge-amber">Fácil</span>
+                <span id="sheet-time-badge" class="badge badge-violet">⏱️ 25 min total</span>
+              </div>
+              <h1 id="sheet-recipe-title" style="font-size: 2.2rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.02em;">
+                Título de la Receta
+              </h1>
+              <p id="sheet-recipe-desc" style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 1.25rem; line-height: 1.5;">
+                Descripción gastronómica...
+              </p>
+              
+              <!-- Macros Banner -->
+              <div id="sheet-macros-banner" class="cook-sheet-macros-banner">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- All Ingredients List in Sheet -->
+          <div class="cook-sheet-ingredients-panel">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🥑</span>
+              <span id="sheet-ingredients-title">Todos los Ingredientes & Cantidades:</span>
+            </h3>
+            <div id="sheet-ingredients-grid" class="cook-sheet-ingredients-grid">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- All Steps Sequential List -->
+        <div class="cook-sheet-steps-stream">
+          <div class="cook-sheet-stream-header">
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.35rem;">📜 Guía de Preparación Paso a Paso Completa</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">
+              Sigue los pasos en orden cronológico o inicia los temporizadores individuales según avances:
+            </p>
+          </div>
+
+          <div id="sheet-all-steps-container" class="cook-sheet-steps-list">
+            <!-- Populated dynamically with all steps expanded -->
+          </div>
+
+          <!-- Final Complete Button in Sheet Mode -->
+          <div style="text-align: center; margin-top: 3rem; margin-bottom: 4rem;">
+            <button class="btn btn-emerald btn-xl" onclick="finishRecipeCelebration()" style="box-shadow: 0 0 40px var(--accent-emerald-glow); font-size: 1.15rem; padding: 1.2rem 3rem;">
+              🎉 ¡Completar Receta y Guardar Ahorro!
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- COMPLETION CELEBRATION MODAL -->
+  <div id="cook-complete-modal" class="modal-backdrop">
+    <div class="modal-content" style="text-align: center; max-width: 600px; padding: 3rem 2.25rem;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+      <span class="badge badge-emerald" style="margin-bottom: 0.75rem;">¡Receta Completada con Éxito!</span>
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.75rem;">¡Buen provecho!</h2>
+      <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.75rem;">
+        Has cocinado un plato exquisito de alta nutrición optimizando cada ingrediente.
+      </p>
+
+      <!-- Nutritional summary delivery -->
+      <div id="complete-macros-summary" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1rem;">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Impact Summary Box -->
+      <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.95rem; color: #FFF; line-height: 1.6;" id="complete-impact-summary">
+        🌱 Has evitado 1.8 kg de CO2<br/>
+        💰 Has ahorrado 14.50€ vs restaurante
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="planner.html" class="btn btn-primary btn-lg">📋 Ver Planificador Semanal</a>
+        <a href="recipes.html" class="btn btn-secondary btn-lg">🍳 Cocinar Otro Plato</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=3.4"></script>
+  <script src="js/audio-engine.js?v=3.4"></script>
+  <script src="js/storage.js?v=3.4"></script>
+  <script src="js/ai-recipe-generator.js?v=3.4"></script>
+  <script src="js/main.js?v=3.4"></script>
+  <script src="js/cook.js?v=3.4"></script>
+</body>
+</html>

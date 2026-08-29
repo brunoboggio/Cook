@@ -1,0 +1,694 @@
+/* ==========================================================================
+   FRIDGEFLOW - RESPONSIVE PERFECTION & MOBILE MASTER STYLESHEET
+   100% Optimized for Smartphones & Tablets | 0% Modification to PC/Desktop
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TABLET BREAKPOINT (max-width: 992px)
+   ========================================================================== */
+@media (max-width: 992px) {
+  /* Navigation Bar Adaptations */
+  .navbar-floating {
+    width: calc(100% - 2rem) !important;
+    top: 0.75rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-mobile-toggle {
+    display: flex !important;
+  }
+
+  /* Main Container Spacing */
+  main.container {
+    padding-top: 6rem !important;
+    padding-bottom: 4rem !important;
+    padding-inline: 1.25rem !important;
+  }
+
+  /* Bento & Grid Defaults */
+  .bento-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+
+  /* Planner Single-Week Grid on Tablet */
+  #planner-grid-container.single-week-layout,
+  .planner-week-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  /* Recipes Grid on Tablet */
+  #recipes-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+
+  /* Prices Grid on Tablet */
+  .prices-bento-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   2. SMARTPHONE MASTER BREAKPOINT (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Base Viewport & Safety */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .container, .container-fluid {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-inline: 1rem !important;
+    box-sizing: border-box !important;
+  }
+
+  main.container {
+    padding-top: 5.5rem !important;
+    padding-bottom: 4rem !important;
+    padding-inline: 1rem !important;
+  }
+
+  /* Global Typography Scaling */
+  h1 {
+    font-size: clamp(1.65rem, 6.5vw, 2.25rem) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 5.2vw, 1.75rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  h3 {
+    font-size: clamp(1.15rem, 4.5vw, 1.35rem) !important;
+    line-height: 1.3 !important;
+  }
+
+  p {
+    font-size: 0.9rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Form Elements: Prevent iOS Auto-Zoom */
+  input, select, textarea, .form-control {
+    font-size: 16px !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     A. FLOATING NAVBAR & MOBILE DRAWER
+     ------------------------------------------------------------------------ */
+  .navbar-floating {
+    width: calc(100% - 1.25rem) !important;
+    top: 0.5rem !important;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: var(--radius-full) !important;
+  }
+
+  .nav-brand {
+    font-size: 1.1rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .brand-icon-wrapper {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 1rem !important;
+    border-radius: 10px !important;
+  }
+
+  .nav-actions {
+    gap: 0.4rem !important;
+  }
+
+  /* Hide non-critical buttons in mobile header (available in drawer) */
+  .nav-actions .audio-toggle-btn,
+  .nav-actions .trigger-backup-modal {
+    display: none !important;
+  }
+
+  .nav-actions .btn-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .nav-actions a.btn,
+  .nav-actions button.btn {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Enhanced Mobile Navigation Drawer */
+  .mobile-nav-drawer {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(10, 13, 18, 0.97) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    z-index: 2500 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 2rem 1.5rem !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease !important;
+    visibility: hidden !important;
+  }
+
+  .mobile-nav-drawer.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+  }
+
+  .mobile-nav-drawer .nav-link {
+    font-size: 1.15rem !important;
+    font-family: var(--font-display) !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 0.85rem 1.25rem !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-nav-drawer .nav-link.active {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    color: #34D399 !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2) !important;
+  }
+
+  .mobile-drawer-close {
+    position: absolute !important;
+    top: 1.25rem !important;
+    right: 1.25rem !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.2rem !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+    border-radius: 50% !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     B. URL 1: PLANNER.HTML (Planificador Semanal & Carrito Consolidado)
+     ------------------------------------------------------------------------ */
+  /* Quick Action Button Full-Width */
+  #btn-generate-protein-plan {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.85rem 1.25rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Configuration Glass Panel */
+  .glass-panel {
+    padding: 1.25rem !important;
+    border-radius: 18px !important;
+  }
+
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Days Selector & Weeks Selector Buttons */
+  .days-selector-btn {
+    flex: 1 1 calc(50% - 0.5rem) !important;
+    min-width: 115px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 0.55rem 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .weeks-selector-btn {
+    flex: 1 1 calc(33.333% - 0.5rem) !important;
+    min-width: 70px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 0.5rem 0.35rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .planner-summary-badge-strip {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Protein Presets Pills */
+  .protein-preset-btn {
+    flex: 1 1 calc(50% - 0.5rem) !important;
+    text-align: center !important;
+    padding: 0.45rem 0.4rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* Planner Day Grid Layout: Clean Single Column Card Flow */
+  #planner-grid-container.single-week-layout,
+  .planner-week-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+  }
+
+  .planner-week-section {
+    padding: 1.15rem !important;
+    border-radius: 18px !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .planner-week-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.6rem !important;
+  }
+
+  .planner-week-stats {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Day Column Card */
+  .day-column {
+    padding: 1.15rem !important;
+    border-radius: 18px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Meal Slot Cards & Action Buttons */
+  .meal-slot-card {
+    padding: 0.8rem !important;
+    border-radius: 14px !important;
+  }
+
+  .meal-slot-card button.btn-sm,
+  .meal-slot-card a.btn-sm {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.72rem !important;
+    min-height: 34px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Consolidated Smart Shopping Cart */
+  #cart-section {
+    padding: 1.25rem !important;
+    border-radius: 20px !important;
+  }
+
+  #cart-section > div:first-child {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.25rem !important;
+  }
+
+  #cart-section > div:first-child > div:last-child {
+    width: 100% !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  #cart-section > div:first-child > div:last-child > div:first-child {
+    text-align: left !important;
+  }
+
+  /* Export Buttons Stack in Cart */
+  #cart-section .btn-secondary {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.88rem !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+  }
+
+  #cart-section > div:first-child > div:last-child > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Cart Items Container */
+  #shopping-cart-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+  }
+
+  #shopping-cart-container div[style*="minmax(290px, 1fr)"],
+  #shopping-cart-container div[style*="minmax(280px, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     C. URL 2: RECIPES.HTML (Recetas Proteicas & Creador IA)
+     ------------------------------------------------------------------------ */
+  /* Header Actions */
+  #btn-open-ai-creator {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 46px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Sort Control */
+  #recipes-sort-select {
+    width: 100% !important;
+    min-height: 42px !important;
+  }
+
+  /* Filter Toolbars: Momentum Touch Horizontal Scrolling */
+  .recipe-cat-filter,
+  .recipe-diet-filter {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    min-height: 38px !important;
+  }
+
+  /* Recipes Grid in 1 Column */
+  #recipes-grid-container {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+  }
+
+  /* Recipe Card Image & Actions */
+  #recipes-grid-container .glass-panel-interactive {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #recipes-grid-container img {
+    height: 190px !important;
+  }
+
+  /* AI Creator Modal & Dropzone */
+  #ai-creator-modal .modal-content {
+    width: calc(100% - 1.5rem) !important;
+    max-width: 100% !important;
+    padding: 1.25rem !important;
+    border-radius: 20px !important;
+    max-height: 90vh !important;
+  }
+
+  #ai-image-dropzone {
+    padding: 0.85rem !important;
+  }
+
+  /* Recipe Detail Modal */
+  #recipe-detail-modal .modal-content {
+    width: calc(100% - 1.25rem) !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border-radius: 20px !important;
+    max-height: 92vh !important;
+  }
+
+  #recipe-detail-modal .modal-content > div:first-child {
+    height: 190px !important;
+  }
+
+  #recipe-detail-modal .modal-content > div:last-child {
+    padding: 1.25rem !important;
+  }
+
+  /* Macro Breakdown Grid (2x2 on Mobile) */
+  #recipe-detail-modal .modal-content div[style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.6rem !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     D. URL 3: PRICES.HTML (Precios de Insumos en $ ARS)
+     ------------------------------------------------------------------------ */
+  /* Action Buttons Grid in Hero */
+  .prices-hero-actions,
+  section:first-of-type > div:first-child > div:last-child {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  section:first-of-type > div:first-child > div:last-child > a.btn-primary {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 44px !important;
+  }
+
+  /* KPI Cards: 2x2 Grid */
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+
+  /* Insumos Bento Grid: 1 Column */
+  .prices-bento-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+  }
+
+  .insumo-price-card {
+    padding: 1.1rem !important;
+    border-radius: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .insumo-price-input-wrapper {
+    padding: 0.35rem 0.65rem !important;
+    min-height: 44px !important;
+  }
+
+  .insumo-price-input {
+    font-size: 1.15rem !important;
+  }
+
+  /* Category Filter Pills */
+  .price-cat-pill {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    min-height: 38px !important;
+    padding: 0.45rem 0.85rem !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     E. URL AUXILIAR: COOK.HTML (Modo Cocina Chef HUD)
+     ------------------------------------------------------------------------ */
+  .cook-header-inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .cook-header-left {
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .cook-header-center {
+    justify-content: flex-start !important;
+    width: 100% !important;
+  }
+
+  .cook-header-title {
+    max-width: 260px !important;
+    font-size: 1.05rem !important;
+  }
+
+  .cook-header-right {
+    justify-content: space-between !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .cook-stepper-pills {
+    justify-content: flex-start !important;
+    padding: 0.4rem 0.75rem !important;
+  }
+
+  .cook-main-viewport {
+    padding: 1.25rem 0.75rem 5rem 0.75rem !important;
+  }
+
+  .cook-grid-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .cook-prep-sidebar {
+    position: static !important;
+    max-height: none !important;
+  }
+
+  .cook-instruction-text {
+    font-size: 1.35rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .cook-nav-bar-bottom {
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+  }
+
+  .cook-nav-bar-bottom .btn {
+    width: 100% !important;
+    min-height: 48px !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     F. GLOBAL MODALS & TOASTS
+     ------------------------------------------------------------------------ */
+  .modal-backdrop {
+    padding: 0.75rem !important;
+  }
+
+  .modal-content, .modal-card {
+    padding: 1.25rem !important;
+    border-radius: 20px !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+  }
+
+  .toast-container {
+    left: 1rem !important;
+    right: 1rem !important;
+    bottom: 1.25rem !important;
+    align-items: center !important;
+  }
+
+  .toast {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 390px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Master Footer */
+  .footer-master {
+    padding-block: 3rem 1.5rem !important;
+    margin-top: 4rem !important;
+  }
+
+  .footer-master .container {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1.25rem !important;
+  }
+
+  .footer-master .container > div:last-child {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   3. EXTRA COMPACT SMARTPHONES (max-width: 400px)
+   ========================================================================== */
+@media (max-width: 400px) {
+  .navbar-floating {
+    width: calc(100% - 0.75rem) !important;
+    padding: 0.35rem 0.6rem !important;
+  }
+
+  .nav-brand span {
+    font-size: 1rem !important;
+  }
+
+  .days-selector-btn {
+    flex: 1 1 100% !important;
+  }
+
+  .weeks-selector-btn {
+    flex: 1 1 calc(50% - 0.35rem) !important;
+  }
+
+  .protein-preset-btn {
+    flex: 1 1 100% !important;
+  }
+
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .prices-hero-actions,
+  section:first-of-type > div:first-child > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  .meal-slot-card button.btn-sm,
+  .meal-slot-card a.btn-sm {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* ==========================================================================
+   4. TOUCH TACTILE & POINTER INTERACTIONS
+   ========================================================================== */
+@media (pointer: coarse), (hover: none) {
+  /* Hide Desktop Magnetic Cursors */
+  .custom-cursor-dot,
+  .custom-cursor-outline {
+    display: none !important;
+  }
+
+  /* Tactile Touch Feedback */
+  .fridge-item-pill:active,
+  .days-selector-btn:active,
+  .weeks-selector-btn:active,
+  .protein-preset-btn:active,
+  .btn:active {
+    transform: scale(0.97) !important;
+  }
+
+  /* Smooth Momentum Scrolling */
+  .fridge-shelf,
+  .cook-stepper-pills,
+  div[style*="overflow-x: auto"] {
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+

@@ -1,0 +1,1564 @@
+/* ==========================================================================
+   FRIDGEFLOW - AWWWARDS INTERACTION ENGINE & STYLES
+   Magnetic Cursor, 3D Refrigerator, Bento Physics, Cook HUD, Ambient Audio FX
+   ========================================================================== */
+
+/* 1. Custom Magnetic Cursor (Desktop Only) */
+.custom-cursor-dot,
+.custom-cursor-outline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 99999;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.15s ease-out;
+}
+
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-emerald);
+  box-shadow: 0 0 10px var(--accent-emerald);
+}
+
+.custom-cursor-outline {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+.custom-cursor-outline.hovered {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: var(--accent-emerald);
+}
+
+@media (pointer: coarse) {
+  .custom-cursor-dot, .custom-cursor-outline {
+    display: none !important;
+  }
+}
+
+/* 2. Interactive 3D Refrigerator Simulator */
+.fridge-stage-wrapper {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.fridge-unit {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  background: linear-gradient(145deg, #1A1E24 0%, #0F1216 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  overflow: visible;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fridge-interior {
+  position: relative;
+  min-height: 500px;
+  background: 
+    linear-gradient(180deg, rgba(16, 20, 27, 0.88) 0%, rgba(10, 13, 18, 0.96) 100%),
+    url('../assets/images/fridge_interior.jpg') center/cover no-repeat;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
+}
+
+.fridge-interior::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 3px;
+  background: #E2E8F0;
+  box-shadow: 0 0 35px 12px rgba(226, 232, 240, 0.4);
+  border-radius: var(--radius-full);
+}
+
+.fridge-shelf {
+  position: relative;
+  background: rgba(22, 27, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 14px;
+  padding: 0.65rem 0.85rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+.fridge-shelf::-webkit-scrollbar { display: none; }
+
+.fridge-shelf-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94A3B8;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fridge-item-pill {
+  flex-shrink: 0;
+  background: rgba(30, 36, 46, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 0.45rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: grab;
+  user-select: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fridge-item-pill:hover {
+  transform: translateY(-3px) scale(1.04);
+  border-color: var(--accent-emerald);
+  box-shadow: 0 8px 20px var(--accent-emerald-glow);
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.fridge-item-pill:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+
+.fridge-door {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30, 35, 45, 0.98) 0%, rgba(18, 22, 28, 0.99) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.85, 0.32, 1.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+  z-index: 10;
+  box-shadow: 15px 0 35px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.fridge-unit.open .fridge-door {
+  transform: rotateY(-105deg);
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.fridge-door-handle {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 120px;
+  background: linear-gradient(180deg, #94A3B8 0%, #475569 50%, #94A3B8 100%);
+  border-radius: var(--radius-full);
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5), inset 1px 1px 1px #FFF;
+}
+
+.fridge-door-screen {
+  background: rgba(10, 13, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);
+}
+
+/* ==========================================================================
+   3. COOK MODE CHEF HUD & COMPREHENSIVE STEP-BY-STEP (V3.0)
+   ========================================================================== */
+
+.cook-mode-body {
+  background: #07090B !important;
+  color: #F8FAFC !important;
+  overflow-y: auto !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Top Sticky Navigation Bar */
+.cook-header-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(10, 14, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+  width: 100%;
+}
+
+.cook-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  gap: 1.5rem;
+}
+
+.cook-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.cook-header-center {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.cook-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 100%;
+}
+
+.cook-header-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
+  background: #1A1E24;
+}
+
+.cook-header-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 0.15rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+}
+
+.cook-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.cook-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.cook-view-segmented {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 3px;
+}
+
+.cook-view-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cook-view-tab:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cook-view-tab.active {
+  background: var(--accent-emerald);
+  color: #0A0C0E;
+  font-weight: 800;
+  box-shadow: 0 2px 12px var(--accent-emerald-glow);
+}
+
+.cook-audio-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Stepper Checkpoint Pills */
+.cook-stepper-strip {
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  width: 100%;
+}
+
+.cook-stepper-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cook-stepper-pills::-webkit-scrollbar { display: none; }
+
+.cook-step-pill-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.cook-step-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #FFF;
+}
+
+.cook-step-pill-btn.active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+  box-shadow: 0 0 12px var(--accent-emerald-glow);
+}
+
+.cook-step-pill-btn.completed {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34D399;
+}
+
+.cook-progress-bar-container {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  width: 100%;
+}
+
+.cook-progress-bar-fill {
+  height: 100%;
+  width: 25%;
+  background: var(--grad-brand);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+/* Viewport Containers */
+.cook-main-viewport {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 6rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cook-view-container {
+  display: none !important;
+  width: 100%;
+}
+
+.cook-view-container.active {
+  display: block !important;
+  animation: fadeInCook 0.3s ease forwards;
+}
+
+@keyframes fadeInCook {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   VIEW 1: FOCUS STEP-BY-STEP (2 Columns)
+   ========================================================================== */
+.cook-grid-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 2rem;
+  align-items: start;
+  width: 100%;
+}
+
+.cook-prep-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 7rem;
+  max-height: calc(100vh - 8.5rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.cook-prep-sidebar::-webkit-scrollbar { width: 5px; }
+.cook-prep-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.cook-card {
+  background: rgba(18, 22, 28, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+}
+
+.cook-card-hero {
+  padding: 0;
+  overflow: hidden;
+}
+
+.cook-card-hero-img-wrap {
+  position: relative;
+  height: 180px;
+  width: 100%;
+  overflow: hidden;
+  background: #1A1E24;
+}
+
+.cook-card-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.cook-card-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10,12,16,0.9) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 1rem;
+}
+
+.cook-macros-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.cook-macro-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.5rem 0.35rem;
+  text-align: center;
+}
+
+.cook-macro-chip.highlight {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.cook-macro-label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15rem;
+}
+
+.cook-macro-val {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FFF;
+}
+
+.cook-macro-chip.highlight .cook-macro-val {
+  color: var(--accent-emerald);
+}
+
+.cook-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.cook-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFF;
+  margin: 0;
+}
+
+.cook-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Ingredients Checklist */
+.cook-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cook-checklist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.cook-checklist-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cook-checklist-item.checked {
+  background: rgba(16, 185, 129, 0.06);
+  border-color: rgba(16, 185, 129, 0.25);
+  opacity: 0.75;
+}
+
+.cook-checklist-item.checked .cook-check-name {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.cook-check-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cook-check-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--text-tertiary);
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  color: #000;
+  transition: all var(--transition-fast);
+}
+
+.cook-checklist-item.checked .cook-check-box {
+  background: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  color: #000;
+}
+
+.cook-check-amount {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+}
+
+/* Equipment Pills */
+.cook-equipment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cook-equip-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Step Roadmap (Timeline) */
+.cook-roadmap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cook-roadmap-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cook-roadmap-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cook-roadmap-item.active {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 15px var(--accent-emerald-glow);
+}
+
+.cook-roadmap-item.completed {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.cook-roadmap-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.cook-roadmap-item.active .cook-roadmap-badge {
+  background: var(--accent-emerald);
+  color: #000;
+}
+
+.cook-roadmap-item.completed .cook-roadmap-badge {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34D399;
+}
+
+.cook-roadmap-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.cook-roadmap-item.active .cook-roadmap-text {
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.cook-card-chef-secret {
+  background: rgba(245, 158, 11, 0.06);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+/* Master Workstation Step Card */
+.cook-step-master-card {
+  background: rgba(18, 22, 28, 0.9);
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.cook-step-master-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.step-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.step-num-pill {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+}
+
+.step-phase-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.step-time-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+}
+
+.cook-instruction-wrapper {
+  margin-bottom: 2rem;
+}
+
+.cook-instruction-lead-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+}
+
+.cook-instruction-hero-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.4;
+  color: #FFFFFF;
+  letter-spacing: -0.015em;
+}
+
+.cook-instruction-hero-text .hl-action {
+  color: var(--accent-emerald);
+  font-weight: 800;
+}
+
+.cook-instruction-hero-text .hl-ingredient {
+  color: #FCD34D;
+  text-decoration: underline dotted rgba(245, 158, 11, 0.4);
+  text-underline-offset: 4px;
+}
+
+.cook-instruction-hero-text .hl-temp {
+  color: #F43F5E;
+  font-weight: 800;
+}
+
+/* Step Specific Ingredients */
+.cook-step-specific-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.cook-step-section-heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cook-step-ingredients-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cook-step-ing-chip {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #E2E8F0;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cook-step-ing-chip strong {
+  color: var(--accent-emerald);
+  font-family: var(--font-mono);
+}
+
+/* Pro Tip Panel */
+.cook-step-tip-panel {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.cook-step-tip-icon {
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.cook-step-tip-body {
+  flex: 1;
+}
+
+.cook-step-tip-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #FCD34D;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.cook-step-tip-content {
+  font-size: 0.95rem;
+  color: #FEF3C7;
+  line-height: 1.45;
+}
+
+/* Smart Timer Box */
+.cook-smart-timer-box {
+  background: rgba(10, 14, 18, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2.25rem;
+}
+
+.cook-timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.cook-timer-body {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.cook-timer-controls {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cook-timer-main-btn-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.cook-timer-adjust-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.cook-timer-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.cook-kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 0.15rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Footer Navigation */
+.cook-step-navigation-footer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.cook-nav-btn {
+  flex: 1;
+  min-width: 160px;
+  font-weight: 700;
+}
+
+.cook-mark-done-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cook-mark-done-btn.is-done {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
+.cook-keyboard-shortcuts-bar {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 1.25rem;
+}
+
+/* ==========================================================================
+   VIEW 2: FULL RECIPE SHEET (All Steps Unfolded View)
+   ========================================================================== */
+.cook-sheet-wrapper {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.cook-sheet-header-card {
+  background: linear-gradient(145deg, rgba(22, 27, 35, 0.95) 0%, rgba(13, 17, 23, 0.98) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 2.25rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.cook-sheet-header-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.25rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.cook-sheet-hero-img {
+  width: 100%;
+  height: 220px;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: #1A1E24;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.cook-sheet-macros-banner {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cook-sheet-ingredients-panel {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.75rem;
+}
+
+.cook-sheet-ingredients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.cook-sheet-steps-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.cook-sheet-stream-header {
+  margin-bottom: 0.5rem;
+}
+
+.cook-sheet-step-card {
+  background: linear-gradient(145deg, rgba(20, 24, 32, 0.9) 0%, rgba(12, 15, 20, 0.95) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2rem 2.25rem;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cook-sheet-step-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.08);
+}
+
+.cook-sheet-step-card.is-completed {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.cook-sheet-step-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.cook-sheet-step-instruction {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+/* Animated SVG Circular Timer */
+.circular-timer-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.circular-timer-svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.circular-timer-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 6;
+}
+
+.circular-timer-progress {
+  fill: none;
+  stroke: var(--accent-emerald);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  filter: drop-shadow(0 0 6px var(--accent-emerald));
+}
+
+.timer-time-display {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+/* Soundscape Equalizer Waves */
+.soundscape-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  padding: 0 4px;
+}
+
+.soundscape-bar {
+  width: 3px;
+  background: var(--accent-emerald);
+  border-radius: 2px;
+  animation: barBounce 1.2s ease-in-out infinite alternate;
+}
+
+.soundscape-bar:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+.soundscape-bar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+.soundscape-bar:nth-child(3) { height: 40%; animation-delay: 0.2s; }
+.soundscape-bar:nth-child(4) { height: 80%; animation-delay: 0.4s; }
+
+@keyframes barBounce {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+@media (max-width: 992px) {
+  .cook-grid-layout {
+    grid-template-columns: 1fr;
+  }
+  .cook-prep-sidebar {
+    position: static;
+    max-height: none;
+  }
+  .cook-sheet-header-grid {
+    grid-template-columns: 1fr;
+  }
+  .cook-header-inner {
+    flex-wrap: wrap;
+  }
+}
+
+/* 4. High-Protein Weekly Bento Grid & Planner Component Styles */
+.days-selector-btn {
+  background: rgba(30, 36, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.82rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.days-selector-btn:hover {
+  border-color: var(--accent-emerald);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.days-selector-btn.active {
+  background: var(--grad-brand) !important;
+  border-color: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 20px var(--accent-emerald-glow) !important;
+}
+
+.weeks-selector-btn {
+  background: rgba(30, 36, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.82rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.weeks-selector-btn:hover {
+  border-color: var(--accent-emerald);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.weeks-selector-btn.active {
+  background: var(--grad-brand) !important;
+  border-color: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 20px var(--accent-emerald-glow) !important;
+}
+
+.planner-summary-badge-strip {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 14px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.planner-week-section {
+  background: rgba(18, 22, 30, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.75rem;
+  margin-bottom: 2.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.planner-week-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.planner-week-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.planner-week-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.protein-preset-btn {
+  background: rgba(30, 36, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #CBD5E1;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.protein-preset-btn:hover {
+  border-color: var(--accent-emerald);
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+  transform: translateY(-1px);
+}
+
+.day-column {
+  background: linear-gradient(180deg, rgba(22, 27, 35, 0.85) 0%, rgba(13, 17, 23, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.day-column:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.1);
+}
+
+.meal-slot-card {
+  background: rgba(30, 36, 46, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.meal-slot-card:hover {
+  background: rgba(34, 42, 54, 0.75);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Multi-Week & Dynamic Days Grid Layouts */
+#planner-grid-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2.5rem !important;
+  width: 100% !important;
+}
+
+#planner-grid-container.single-week-layout {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 1.25rem !important;
+  width: 100% !important;
+}
+
+.planner-week-section {
+  width: 100% !important;
+  display: block !important;
+  background: rgba(18, 22, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+.planner-week-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 1.25rem !important;
+  width: 100% !important;
+}
+
+@media (min-width: 1100px) {
+  .planner-week-grid.grid-days-5,
+  #planner-grid-container.single-week-layout.grid-days-5 {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+  .planner-week-grid.grid-days-7,
+  #planner-grid-container.single-week-layout.grid-days-7 {
+    grid-template-columns: repeat(7, 1fr) !important;
+  }
+  .planner-week-grid.grid-days-3,
+  #planner-grid-container.single-week-layout.grid-days-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .planner-week-grid.grid-days-4,
+  #planner-grid-container.single-week-layout.grid-days-4 {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  .planner-week-grid.grid-days-6,
+  #planner-grid-container.single-week-layout.grid-days-6 {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+}
+
+/* 5. Expiry Radar Status */
+.expiry-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.expiry-fresh {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+.expiry-soon {
+  background: var(--accent-amber);
+  box-shadow: 0 0 8px var(--accent-amber);
+  animation: pulseAmber 2s infinite;
+}
+
+.expiry-critical {
+  background: var(--accent-coral);
+  box-shadow: 0 0 8px var(--accent-coral);
+  animation: pulseRed 1.2s infinite;
+}
+
+@keyframes pulseAmber {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@keyframes pulseRed {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* 6. Holographic Glow & Glass Cards */
+.glow-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-card:hover::after {
+  opacity: 1;
+}
+
+/* 7. Quick Match Pill Animation */
+.match-badge-pulse {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.4) 100%);
+  border: 1px solid var(--accent-emerald);
+  color: #34D399;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ==========================================================================
+   8. Insumos & Custom ARS Prices Grid Styles
+   ========================================================================== */
+.prices-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.insumo-price-card {
+  background: rgba(22, 27, 35, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.22s ease, 
+              box-shadow 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.insumo-price-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.08);
+}
+
+.insumo-price-card.is-custom {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(180deg, rgba(22, 32, 38, 0.85) 0%, rgba(15, 21, 28, 0.95) 100%);
+}
+
+.insumo-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.insumo-price-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(10, 14, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.25rem 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.insumo-price-input-wrapper:focus-within {
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.insumo-price-input-wrapper.saved-flash {
+  animation: pulse-saved-glow 0.8s ease;
+}
+
+@keyframes pulse-saved-glow {
+  0% { border-color: #34D399; box-shadow: 0 0 15px rgba(52, 211, 153, 0.6); }
+  100% { border-color: rgba(255, 255, 255, 0.12); box-shadow: none; }
+}
+
+.insumo-price-input {
+  background: transparent !important;
+  border: none !important;
+  color: #FFFFFF !important;
+  font-family: var(--font-mono) !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  width: 100% !important;
+  padding: 0.4rem 0.25rem !important;
+  outline: none !important;
+  text-align: right;
+}
+
+.insumo-price-currency {
+  color: #34D399;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1rem;
+  padding-right: 0.35rem;
+  user-select: none;
+}
+
+.insumo-price-suffix {
+  color: var(--text-tertiary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding-left: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
