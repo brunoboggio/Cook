@@ -81,21 +81,41 @@ class AIRecipeGenerator {
     };
   }
 
+  // --- Model Name Normalizer ---
+  normalizeModelName(rawModel) {
+    if (!rawModel) return 'gemini-3.7-flash';
+    let m = String(rawModel).trim().toLowerCase();
+    if (m.startsWith('models/')) m = m.substring(7);
+    if (m === 'gemini-3.7-flash-light' || m === 'gemini-3.7-flash-lite' || m === 'gemini-3.7') return 'gemini-3.7-flash';
+    if (m === 'gemini-3.6-flash-light' || m === 'gemini-3.6-flash-lite' || m === 'gemini-3.6') return 'gemini-3.6-flash';
+    if (m === 'gemini-3.5-flash-light' || m === 'gemini-3.5-flash') return 'gemini-3.5-flash-lite';
+    if (m === 'gemini-3.1-flash-light' || m === 'gemini-3.1-flash') return 'gemini-3.1-flash-lite';
+    if (m === 'gemini-2.5-flash-lite' || m === 'gemini-2.5-flash' || m === 'gemini-2.0-flash' || m === 'gemini-1.5-flash') return 'gemini-3.7-flash';
+    return m;
+  }
+
   // --- AI Settings & Google AI Studio Configuration ---
   getAISettings() {
     try {
       const stored = localStorage.getItem('fridgeflow_ai_config');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        parsed.textModel = this.normalizeModelName(parsed.textModel || 'gemini-3.7-flash');
+        return parsed;
+      }
     } catch (e) {}
     const directKey = localStorage.getItem('fridgeflow_gemini_api_key') || '';
     return {
       apiKey: directKey,
-      textModel: 'gemini-3.7-flash-light',
+      textModel: 'gemini-3.7-flash',
       imageModel: 'nano-banana-2'
     };
   }
 
   saveAISettings(settings) {
+    if (settings && settings.textModel) {
+      settings.textModel = this.normalizeModelName(settings.textModel);
+    }
     localStorage.setItem('fridgeflow_ai_config', JSON.stringify(settings));
     if (settings && settings.apiKey !== undefined) {
       localStorage.setItem('fridgeflow_gemini_api_key', settings.apiKey.trim());
@@ -114,21 +134,24 @@ class AIRecipeGenerator {
   }
 
   // --- Google AI Studio Test Connection Ping ---
-  async testGeminiConnection(apiKey, model = 'gemini-3.7-flash-light') {
+  async testGeminiConnection(apiKey, model = 'gemini-3.7-flash') {
     if (!apiKey || !apiKey.trim()) {
       throw new Error('Debes ingresar una API Key de Google AI Studio.');
     }
 
     const key = apiKey.trim();
+    const primary = this.normalizeModelName(model || 'gemini-3.7-flash');
     const modelsToTry = [
-      model || 'gemini-3.7-flash-light',
-      'gemini-2.5-flash-lite',
-      'gemini-2.0-flash',
-      'gemini-1.5-flash'
+      primary,
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-3.5-flash-lite'
     ];
+    const uniqueModels = [...new Set(modelsToTry)];
 
     let lastError = null;
-    for (const testModel of modelsToTry) {
+    for (const testModel of uniqueModels) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${key}`;
         const response = await fetch(url, {
@@ -153,16 +176,12 @@ class AIRecipeGenerator {
         } else {
           const errData = await response.json().catch(() => ({}));
           lastError = errData?.error?.message || `HTTP ${response.status} (${response.statusText})`;
-          // If 404 (model not found), continue loop to fallback model
-          if (response.status !== 404) {
-            throw new Error(lastError);
-          }
+          // Continue loop to try next model in cascade
+          continue;
         }
       } catch (err) {
         lastError = err.message;
-        if (!err.message.includes('404') && !err.message.includes('not found')) {
-          throw err;
-        }
+        continue;
       }
     }
 
@@ -226,10 +245,9 @@ class AIRecipeGenerator {
   // --- Real Google AI Studio Gemini API Client ---
   async callGeminiAPI(dishName, userNotes, focus, customImage, onProgress, settings) {
     const apiKey = settings.apiKey.trim();
-    const primaryModel = settings.textModel || 'gemini-3.7-flash-light';
-
+    const normalizedPrimary = this.normalizeModelName(settings.textModel || 'gemini-3.7-flash');
     if (onProgress) {
-      onProgress({ step: 1, text: `🤖 Conectando con Google AI Studio (${primaryModel})...` });
+      onProgress({ step: 1, text: `🤖 Conectando con Google AI Studio (${normalizedPrimary})...` });
     }
     await this.delay(300);
 
@@ -329,20 +347,24 @@ REGLAS ESTRICTAS:
     parts.push({ text: promptText });
 
     if (onProgress) {
-      onProgress({ step: 2, text: `🧠 Gemini (${primaryModel}) analizando ingredientes, técnicas y macros...` });
+      onProgress({ step: 2, text: `🧠 Gemini (${normalizedPrimary}) analizando ingredientes, técnicas y macros...` });
     }
 
     const modelsToTry = [
-      primaryModel,
-      'gemini-2.5-flash-lite',
-      'gemini-2.0-flash',
-      'gemini-1.5-flash'
+      normalizedPrimary,
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-3.5-flash-lite',
+      'gemini-flash-lite-latest'
     ];
+    const uniqueModels = [...new Set(modelsToTry)];
 
     let lastError = null;
     let rawText = '';
+    let usedModel = normalizedPrimary;
 
-    for (const model of modelsToTry) {
+    for (const model of uniqueModels) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
@@ -361,26 +383,23 @@ REGLAS ESTRICTAS:
           const errData = await response.json().catch(() => ({}));
           const errMsg = errData?.error?.message || `HTTP ${response.status}`;
           lastError = new Error(errMsg);
-          if (response.status === 404) {
-            // Model not found in this API version, try next model in cascade
-            continue;
-          }
-          throw lastError;
+          console.warn(`[Gemini API] Modelo ${model} respondió ${response.status}: ${errMsg}. Probando siguiente modelo en cascada...`);
+          continue;
         }
 
         const data = await response.json();
         const candidate = data.candidates && data.candidates[0];
         if (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0]) {
           rawText = candidate.content.parts[0].text;
+          usedModel = model;
           break;
         } else {
-          throw new Error('Respuesta vacía de Gemini.');
+          continue;
         }
       } catch (err) {
         lastError = err;
-        if (!err.message.includes('404') && !err.message.includes('not found')) {
-          throw err;
-        }
+        console.warn(`[Gemini API] Excepción con modelo ${model}:`, err.message);
+        continue;
       }
     }
 
@@ -428,7 +447,7 @@ REGLAS ESTRICTAS:
     const recipe = {
       id: cleanSlug,
       title: parsed.title || dishName,
-      subtitle: parsed.subtitle || `Receta gourmet creada con Gemini (${primaryModel}) e IA.`,
+      subtitle: parsed.subtitle || `Receta gourmet creada con Gemini (${usedModel}) e IA.`,
       description: parsed.description || `Plato diseñado por Gemini AI para optimizar aporte nutricional.`,
       category: ['desayuno', 'almuerzo', 'cena'].includes(parsed.category) ? parsed.category : 'almuerzo',
       prepTime: parseInt(parsed.prepTime, 10) || 12,
