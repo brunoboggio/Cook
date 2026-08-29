@@ -720,8 +720,12 @@ function renderAIPreview(recipe) {
   `;
 }
 
-window.saveAndCloseAICreator = function() {
+window.saveAndCloseAICreator = async function() {
   if (!tempGeneratedRecipe) return;
+  const isDataUrl = tempGeneratedRecipe.image && tempGeneratedRecipe.image.startsWith('data:');
+  if (isDataUrl && window.showToast) {
+    window.showToast('☁️ Guardando receta y subiendo imagen a Firebase Cloud Storage...', 'sky');
+  }
   fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
   closeAICreatorModal();
   if (window.soundFX) window.soundFX.playFanfare();
@@ -729,8 +733,12 @@ window.saveAndCloseAICreator = function() {
   renderRecipes();
 };
 
-window.saveAndAssignToPlanner = function() {
+window.saveAndAssignToPlanner = async function() {
   if (!tempGeneratedRecipe) return;
+  const isDataUrl = tempGeneratedRecipe.image && tempGeneratedRecipe.image.startsWith('data:');
+  if (isDataUrl && window.showToast) {
+    window.showToast('☁️ Guardando receta y subiendo imagen a Firebase Cloud Storage...', 'sky');
+  }
   fridgeStore.saveCustomRecipe(tempGeneratedRecipe);
   fridgeStore.setMealSlot('day_1', 'lunch', tempGeneratedRecipe.id);
   closeAICreatorModal();

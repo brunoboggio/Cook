@@ -54,6 +54,51 @@
   }
 }
 
+/* Intermediate Laptop/Desktop Breakpoint (769px - 1300px) */
+@media (max-width: 1300px) and (min-width: 769px) {
+  .cook-header-inner {
+    padding: 0.65rem 1.25rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .cook-header-title {
+    max-width: 200px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .cook-header-left a.btn-sm {
+    padding: 0.3rem 0.55rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  .cook-view-tab {
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .cook-audio-tools {
+    gap: 0.3rem !important;
+  }
+
+  .cook-audio-tools .btn-sm {
+    padding: 0.35rem 0.55rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  .meal-card-actions {
+    gap: 0.2rem !important;
+  }
+
+  .meal-card-btn {
+    padding: 0.25rem 0.2rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .meal-card-btn span {
+    font-size: 0.65rem !important;
+  }
+}
+
 /* ==========================================================================
    2. SMARTPHONE MASTER BREAKPOINT (max-width: 768px)
    ========================================================================== */
@@ -150,7 +195,8 @@
   .nav-actions .audio-toggle-btn,
   .nav-actions .trigger-backup-modal,
   .nav-actions .trigger-search-modal,
-  .nav-actions .theme-toggle-btn {
+  .nav-actions .theme-toggle-btn,
+  .nav-actions .firebase-status-pill {
     display: none !important;
   }
 
@@ -329,8 +375,30 @@
 
   /* Meal Slot Cards & Action Buttons */
   .meal-slot-card {
-    padding: 0.8rem !important;
+    padding: 0.85rem !important;
     border-radius: 14px !important;
+  }
+
+  .meal-slot-recipe-title {
+    font-size: 0.9rem !important;
+    line-height: 1.3 !important;
+    min-height: auto !important;
+  }
+
+  .meal-card-actions {
+    gap: 0.4rem !important;
+    margin-top: 0.75rem !important;
+    padding-top: 0.5rem !important;
+  }
+
+  .meal-card-btn {
+    padding: 0.4rem 0.35rem !important;
+    font-size: 0.76rem !important;
+    min-height: 36px !important;
+  }
+
+  .meal-card-btn span {
+    font-size: 0.74rem !important;
   }
 
   .meal-slot-card button.btn-sm,

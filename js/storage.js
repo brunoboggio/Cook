@@ -66,6 +66,14 @@ class FridgeStorageManager {
     try {
       localStorage.setItem(key, JSON.stringify(data));
       window.dispatchEvent(new CustomEvent('fridgeflow:statechange', { detail: { key, data } }));
+
+      // Auto-sync state changes to Cloud Firestore
+      if (window.firebaseDB && typeof window.firebaseDB.syncAppState === 'function') {
+        const stateKeyEntry = Object.entries(this.STORAGE_KEYS).find(([name, val]) => val === key);
+        if (stateKeyEntry) {
+          window.firebaseDB.syncAppState(stateKeyEntry[0].toLowerCase(), data);
+        }
+      }
     } catch (e) {
       console.error(`Error saving ${key} to storage:`, e);
     }
@@ -116,6 +124,11 @@ class FridgeStorageManager {
     }
     this.save(this.STORAGE_KEYS.CUSTOM_RECIPES, customList);
     this.syncRecipesCatalog();
+
+    // Persist immediately to Cloud Firestore
+    if (window.firebaseDB && typeof window.firebaseDB.saveRecipe === 'function') {
+      window.firebaseDB.saveRecipe(recipe);
+    }
   }
 
   deleteCustomRecipe(recipeId) {
@@ -123,6 +136,11 @@ class FridgeStorageManager {
     customList = customList.filter(r => r.id !== recipeId);
     this.save(this.STORAGE_KEYS.CUSTOM_RECIPES, customList);
     this.syncRecipesCatalog();
+
+    // Delete in Cloud Firestore
+    if (window.firebaseDB && typeof window.firebaseDB.deleteRecipe === 'function') {
+      window.firebaseDB.deleteRecipe(recipeId);
+    }
   }
 
   syncRecipesCatalog() {
@@ -131,11 +149,19 @@ class FridgeStorageManager {
     
     // Base static recipes
     if (!window._masterStaticRecipes) {
-      window._masterStaticRecipes = [...window.FridgeData.recipes];
+      window._masterStaticRecipes = Array.isArray(window.FridgeData.recipes) ? [...window.FridgeData.recipes] : [];
     }
     
-    // Merge: custom recipes first, then static
-    window.FridgeData.recipes = [...customList, ...window._masterStaticRecipes];
+    // Deduplicate by ID: custom recipes have priority
+    const recipeMap = new Map();
+    customList.forEach(r => recipeMap.set(r.id, r));
+    window._masterStaticRecipes.forEach(r => {
+      if (!recipeMap.has(r.id)) {
+        recipeMap.set(r.id, r);
+      }
+    });
+
+    window.FridgeData.recipes = Array.from(recipeMap.values());
   }
 
   // --- Pantry Inventory Management ---

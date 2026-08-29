@@ -304,23 +304,23 @@ function renderPlannerView() {
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
                   <img src="${breakfastRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${breakfastRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
                   <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 700; font-size: 0.88rem; color: #FFFFFF; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;" onclick="window.openRecipeModal('${breakfastRecipe.id}')" title="${breakfastRecipe.title}">
+                    <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${breakfastRecipe.id}')" title="${breakfastRecipe.title}">
                       ${breakfastRecipe.title}
                     </div>
                     <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
                       ⏱️ ${breakfastRecipe.prepTime + breakfastRecipe.cookTime}m · ${breakfastRecipe.calories} kcal
                     </div>
-                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.45rem;">
-                  <div style="display: flex; gap: 0.35rem; align-items: center;">
-                    <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="duplicateMealToNextDay('${dayKey}', 'breakfast')" title="Repetir desayuno al día siguiente">
-                      🔁 Repetir
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')">
-                      🔄 Cambiar
-                    </button>
                   </div>
-                  <a href="cook.html?recipe=${breakfastRecipe.id}" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border-radius: 8px;">
-                    👨‍🍳 Cocinar
+                </div>
+                <div class="meal-card-actions">
+                  <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'breakfast')" title="Repetir desayuno al día siguiente">
+                    🔁 <span>Repetir</span>
+                  </button>
+                  <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')" title="Cambiar receta">
+                    🔄 <span>Cambiar</span>
+                  </button>
+                  <a href="cook.html?recipe=${breakfastRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                    👨‍🍳 <span>Cocinar</span>
                   </a>
                 </div>
               ` : `
@@ -342,7 +342,7 @@ function renderPlannerView() {
               <div style="display: flex; gap: 0.75rem; align-items: center;">
                 <img src="${lunchRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${lunchRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
                 <div style="flex: 1; min-width: 0;">
-                  <div style="font-weight: 700; font-size: 0.88rem; color: #FFFFFF; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;" onclick="window.openRecipeModal('${lunchRecipe.id}')" title="${lunchRecipe.title}">
+                  <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${lunchRecipe.id}')" title="${lunchRecipe.title}">
                     ${lunchRecipe.title}
                   </div>
                   <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
@@ -350,17 +350,15 @@ function renderPlannerView() {
                   </div>
                 </div>
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.45rem;">
-                <div style="display: flex; gap: 0.35rem; align-items: center;">
-                  <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="duplicateMealToNextDay('${dayKey}', 'lunch')" title="Repetir almuerzo al día siguiente (Batch cooking)">
-                    🔁 Repetir
-                  </button>
-                  <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="openRecipeSwapModal('${dayKey}', 'lunch')">
-                    🔄 Cambiar
-                  </button>
-                </div>
-                <a href="cook.html?recipe=${lunchRecipe.id}" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border-radius: 8px;">
-                  👨‍🍳 Cocinar
+              <div class="meal-card-actions">
+                <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'lunch')" title="Repetir almuerzo al día siguiente (Batch cooking)">
+                  🔁 <span>Repetir</span>
+                </button>
+                <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'lunch')" title="Cambiar receta">
+                  🔄 <span>Cambiar</span>
+                </button>
+                <a href="cook.html?recipe=${lunchRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                  👨‍🍳 <span>Cocinar</span>
                 </a>
               </div>
             ` : `
@@ -381,7 +379,7 @@ function renderPlannerView() {
               <div style="display: flex; gap: 0.75rem; align-items: center;">
                 <img src="${dinnerRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${dinnerRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
                 <div style="flex: 1; min-width: 0;">
-                  <div style="font-weight: 700; font-size: 0.88rem; color: #FFFFFF; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;" onclick="window.openRecipeModal('${dinnerRecipe.id}')" title="${dinnerRecipe.title}">
+                  <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${dinnerRecipe.id}')" title="${dinnerRecipe.title}">
                     ${dinnerRecipe.title}
                   </div>
                   <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
@@ -389,17 +387,15 @@ function renderPlannerView() {
                   </div>
                 </div>
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.45rem;">
-                <div style="display: flex; gap: 0.35rem; align-items: center;">
-                  <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="duplicateMealToNextDay('${dayKey}', 'dinner')" title="Repetir cena al día siguiente (Batch cooking)">
-                    🔁 Repetir
-                  </button>
-                  <button class="btn btn-ghost btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 8px;" onclick="openRecipeSwapModal('${dayKey}', 'dinner')">
-                    🔄 Cambiar
-                  </button>
-                </div>
-                <a href="cook.html?recipe=${dinnerRecipe.id}" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border-radius: 8px;">
-                  👨‍🍳 Cocinar
+              <div class="meal-card-actions">
+                <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'dinner')" title="Repetir cena al día siguiente (Batch cooking)">
+                  🔁 <span>Repetir</span>
+                </button>
+                <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'dinner')" title="Cambiar receta">
+                  🔄 <span>Cambiar</span>
+                </button>
+                <a href="cook.html?recipe=${dinnerRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                  👨‍🍳 <span>Cocinar</span>
                 </a>
               </div>
             ` : `

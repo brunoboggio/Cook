@@ -58,6 +58,10 @@
       updateKPIs();
       renderPricesGrid();
     });
+    window.addEventListener('fridgeflow:statechange', () => {
+      updateKPIs();
+      renderPricesGrid();
+    });
   }
 
   function updateKPIs() {

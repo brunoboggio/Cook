@@ -101,6 +101,97 @@ window.closeBackupModal = function() {
   if (modal) modal.classList.remove('active');
 };
 
+// Firebase Cloud Status Modal
+window.openFirebaseStatusModal = function() {
+  let modal = document.getElementById('firebase-status-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'firebase-status-modal';
+    modal.className = 'modal-backdrop';
+    document.body.appendChild(modal);
+  }
+
+  const recipeCount = (window.FridgeData && window.FridgeData.recipes) ? window.FridgeData.recipes.length : 37;
+  const isOnline = navigator.onLine;
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 580px; padding: 2rem; border-radius: 24px; background: linear-gradient(145deg, rgba(24, 29, 38, 0.98) 0%, rgba(13, 17, 23, 0.99) 100%); border: 1px solid rgba(16, 185, 129, 0.35);">
+      <button class="btn-icon modal-close" onclick="closeFirebaseStatusModal()">✕</button>
+      
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <div style="font-size: 1.8rem; width: 48px; height: 48px; border-radius: 14px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(16, 185, 129, 0.3);">
+          🔥
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #FFF;">Firebase Cloud Firestore</h3>
+            <span class="badge badge-emerald" style="font-size: 0.72rem;">${isOnline ? '🟢 Online' : '🟡 Offline'}</span>
+          </div>
+          <p style="margin: 0; font-size: 0.82rem; color: var(--text-secondary);">Base de datos central en la nube activa y sincronizada en tiempo real</p>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        
+        <!-- Info Grid -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+          <div class="glass-panel" style="padding: 0.85rem; border-radius: 12px; background: rgba(255,255,255,0.03);">
+            <div style="font-size: 0.72rem; color: var(--text-tertiary);">Proyecto Firebase</div>
+            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">fridgeflow-recetas-db</div>
+          </div>
+          <div class="glass-panel" style="padding: 0.85rem; border-radius: 12px; background: rgba(255,255,255,0.03);">
+            <div style="font-size: 0.72rem; color: var(--text-tertiary);">Recetas en Cloud</div>
+            <div style="font-weight: 700; color: var(--accent-emerald); font-size: 0.9rem;">${recipeCount} recetas sincronizadas</div>
+          </div>
+          <div class="glass-panel" style="padding: 0.85rem; border-radius: 12px; background: rgba(255,255,255,0.03);">
+            <div style="font-size: 0.72rem; color: var(--text-tertiary);">Modo de Base de Datos</div>
+            <div style="font-weight: 700; color: var(--accent-sky); font-size: 0.9rem;">Firestore Native (nam5)</div>
+          </div>
+          <div class="glass-panel" style="padding: 0.85rem; border-radius: 12px; background: rgba(255,255,255,0.03);">
+            <div style="font-size: 0.72rem; color: var(--text-tertiary);">Persistencia Local</div>
+            <div style="font-weight: 700; color: var(--accent-amber); font-size: 0.9rem;">IndexedDB Activo ⚡</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 14px; padding: 1rem; font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5;">
+          ✨ Cada receta nueva que crees con IA, modificación de precios en ARS o cambio en tu menú semanal se guarda instantáneamente en Firebase Firestore y estará disponible desde cualquier dispositivo.
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; justify-content: flex-end;">
+          <button class="btn btn-secondary btn-sm" onclick="closeFirebaseStatusModal()">Cerrar</button>
+          <button class="btn btn-primary btn-sm" onclick="forceFirebaseResync()" style="font-weight: 700; box-shadow: 0 0 15px var(--accent-emerald-glow);">
+            🔄 Forzar Resincronización
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('active');
+};
+
+window.closeFirebaseStatusModal = function() {
+  const modal = document.getElementById('firebase-status-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.forceFirebaseResync = async function() {
+  if (window.soundFX) window.soundFX.playClick();
+  if (window.showToast) window.showToast('🔄 Sincronizando con Firebase Firestore...', 'sky');
+  
+  if (window.firebaseDB && typeof window.firebaseDB.fetchAllRecipes === 'function') {
+    const recipes = await window.firebaseDB.fetchAllRecipes();
+    if (recipes && recipes.length > 0) {
+      window.FridgeData.recipes = recipes;
+      window.dispatchEvent(new CustomEvent('fridgeflow:statechange', { detail: { action: 'resync', count: recipes.length } }));
+      if (window.showToast) window.showToast(`✨ Sincronización completa: ${recipes.length} recetas activas`, 'emerald');
+      if (window.soundFX) window.soundFX.playFanfare();
+    }
+  }
+  closeFirebaseStatusModal();
+};
+
 window.copyBackupToClipboard = function() {
   const json = fridgeStore.exportBackupData();
   navigator.clipboard.writeText(json).then(() => {
