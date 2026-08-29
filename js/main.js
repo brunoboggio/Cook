@@ -569,3 +569,226 @@ function handleSearchInput(query) {
 
   resultsContainer.innerHTML = html;
 }
+
+/* ==========================================================================
+   AI SETTINGS & GOOGLE AI STUDIO MODAL CONTROLLER
+   ========================================================================== */
+
+function initAISettingsHandlers() {
+  const settingsBtns = document.querySelectorAll('.trigger-ai-settings-modal');
+  settingsBtns.forEach(btn => btn.addEventListener('click', openAISettingsModal));
+  updateGlobalAIStatusBadges();
+}
+
+window.openAISettingsModal = function() {
+  let modal = document.getElementById('ai-settings-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'ai-settings-modal';
+    modal.className = 'modal-backdrop';
+    document.body.appendChild(modal);
+  }
+
+  const settings = window.aiRecipeGenerator 
+    ? window.aiRecipeGenerator.getAISettings() 
+    : { apiKey: localStorage.getItem('fridgeflow_gemini_api_key') || '', textModel: 'gemini-3.7-flash-light', imageModel: 'nano-banana-2' };
+
+  const hasKey = Boolean(settings.apiKey && settings.apiKey.trim().length > 10);
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 580px; padding: 2rem; border-radius: 24px; background: linear-gradient(145deg, rgba(24, 29, 38, 0.98) 0%, rgba(13, 17, 23, 0.99) 100%); border: 1px solid rgba(16, 185, 129, 0.35); box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+      <button class="btn-icon modal-close" onclick="closeAISettingsModal()">✕</button>
+      
+      <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+        <div style="font-size: 1.8rem; width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(16, 185, 129, 0.35);">
+          🤖
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800;">Configuración de IA (Google AI Studio)</h3>
+          <p style="margin: 0; font-size: 0.82rem; color: var(--text-secondary);">Potencia la creación de recetas con Gemini y generación de imágenes nano-banana-2</p>
+        </div>
+      </div>
+
+      <!-- Live Connection Status Pill -->
+      <div id="ai-modal-status-banner" style="margin-bottom: 1.25rem; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.82rem; display: flex; align-items: center; justify-content: space-between; ${hasKey ? 'background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34D399;' : 'background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); color: #FBBF24;'}">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${hasKey ? '#10B981' : '#F59E0B'}; box-shadow: 0 0 8px ${hasKey ? '#10B981' : '#F59E0B'};"></span>
+          <span>${hasKey ? 'API Key Configurada y Lista' : 'Sin API Key (Usa motor local gratuito)'}</span>
+        </div>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600; font-size: 0.76rem;">
+          Obtener gratis ↗
+        </a>
+      </div>
+
+      <form id="ai-settings-form" onsubmit="saveAISettingsFromModal(event)" style="display: flex; flex-direction: column; gap: 1.2rem;">
+        
+        <!-- API Key Input -->
+        <div>
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span>🔑 Google AI Studio API Key:</span>
+            <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: normal;">Guardada de forma segura en tu navegador</span>
+          </label>
+          <div style="position: relative;">
+            <input type="password" id="ai-settings-api-key" class="form-control" placeholder="AIzaSy..." value="${settings.apiKey || ''}" style="padding-right: 2.8rem; font-family: monospace;" />
+            <button type="button" class="btn-icon" onclick="toggleApiKeyVisibility()" style="position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%); padding: 0.25rem 0.5rem; font-size: 0.9rem;" title="Mostrar / Ocultar clave">
+              👁️
+            </button>
+          </div>
+          <div style="font-size: 0.74rem; color: var(--text-tertiary); margin-top: 0.35rem;">
+            Crea tu clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: var(--accent-emerald);">Google AI Studio (aistudio.google.com)</a>.
+          </div>
+        </div>
+
+        <!-- Text Model Selection -->
+        <div>
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+            🧠 Modelo de Texto y Lógica de Receta:
+          </label>
+          <select id="ai-settings-text-model" class="form-control">
+            <option value="gemini-3.7-flash-light" ${settings.textModel === 'gemini-3.7-flash-light' ? 'selected' : ''}>⚡ gemini-3.7-flash-light (Ultrarrápido & Económico)</option>
+            <option value="gemini-2.5-flash-lite" ${settings.textModel === 'gemini-2.5-flash-lite' ? 'selected' : ''}>⚡ gemini-2.5-flash-lite (Flash Lite de Precisión)</option>
+            <option value="gemini-2.0-flash" ${settings.textModel === 'gemini-2.0-flash' ? 'selected' : ''}>🌟 gemini-2.0-flash (Multimodal con Visión)</option>
+            <option value="gemini-1.5-flash" ${settings.textModel === 'gemini-1.5-flash' ? 'selected' : ''}>✨ gemini-1.5-flash (Estándar Estable)</option>
+          </select>
+        </div>
+
+        <!-- Image Model Selection -->
+        <div>
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+            🎨 Modelo de Fotografía Gourmet:
+          </label>
+          <select id="ai-settings-image-model" class="form-control">
+            <option value="nano-banana-2" ${settings.imageModel === 'nano-banana-2' ? 'selected' : ''}>🍌 nano-banana-2 (Fotografía Gastronómica 8K)</option>
+            <option value="flux" ${settings.imageModel === 'flux' ? 'selected' : ''}>✨ FLUX.1 Culinario</option>
+            <option value="turbo" ${settings.imageModel === 'turbo' ? 'selected' : ''}>⚡ Turbo HD</option>
+          </select>
+        </div>
+
+        <!-- Test Results Message Area -->
+        <div id="ai-settings-test-msg" style="display: none; font-size: 0.82rem; padding: 0.6rem 0.85rem; border-radius: 8px;"></div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="testGeminiConnectionFromModal()" style="font-weight: 600;">
+            🧪 Probar Conexión
+          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="closeAISettingsModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 700;">
+              💾 Guardar Configuración
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  `;
+
+  modal.classList.add('active');
+};
+
+window.closeAISettingsModal = function() {
+  const modal = document.getElementById('ai-settings-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.toggleApiKeyVisibility = function() {
+  const input = document.getElementById('ai-settings-api-key');
+  if (input) {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+};
+
+window.testGeminiConnectionFromModal = async function() {
+  const apiKeyInput = document.getElementById('ai-settings-api-key');
+  const textModelInput = document.getElementById('ai-settings-text-model');
+  const msgBox = document.getElementById('ai-settings-test-msg');
+
+  if (!apiKeyInput || !apiKeyInput.value.trim()) {
+    if (msgBox) {
+      msgBox.style.display = 'block';
+      msgBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      msgBox.style.color = '#F87171';
+      msgBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      msgBox.textContent = '❌ Por favor ingresa una API Key para probar la conexión.';
+    }
+    return;
+  }
+
+  if (msgBox) {
+    msgBox.style.display = 'block';
+    msgBox.style.background = 'rgba(16, 185, 129, 0.1)';
+    msgBox.style.color = '#34D399';
+    msgBox.style.border = '1px solid rgba(16, 185, 129, 0.2)';
+    msgBox.textContent = '⏳ Probando conexión con Google AI Studio...';
+  }
+
+  try {
+    const res = await window.aiRecipeGenerator.testGeminiConnection(
+      apiKeyInput.value.trim(),
+      textModelInput ? textModelInput.value : 'gemini-3.7-flash-light'
+    );
+    if (msgBox) {
+      msgBox.style.background = 'rgba(16, 185, 129, 0.2)';
+      msgBox.style.color = '#34D399';
+      msgBox.style.border = '1px solid #10B981';
+      msgBox.innerHTML = `✅ <strong>¡Conexión Exitosa!</strong> Google AI Studio respondió correctamente con modelo: <code>${res.modelUsed}</code>.`;
+    }
+    if (window.soundFX) window.soundFX.playFanfare();
+  } catch (err) {
+    if (msgBox) {
+      msgBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      msgBox.style.color = '#F87171';
+      msgBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      msgBox.textContent = `❌ Error de conexión: ${err.message}`;
+    }
+  }
+};
+
+window.saveAISettingsFromModal = function(e) {
+  if (e) e.preventDefault();
+  const apiKey = document.getElementById('ai-settings-api-key')?.value.trim() || '';
+  const textModel = document.getElementById('ai-settings-text-model')?.value || 'gemini-3.7-flash-light';
+  const imageModel = document.getElementById('ai-settings-image-model')?.value || 'nano-banana-2';
+
+  const settings = { apiKey, textModel, imageModel };
+  if (window.aiRecipeGenerator) {
+    window.aiRecipeGenerator.saveAISettings(settings);
+  } else {
+    localStorage.setItem('fridgeflow_ai_config', JSON.stringify(settings));
+    localStorage.setItem('fridgeflow_gemini_api_key', apiKey);
+  }
+
+  updateGlobalAIStatusBadges();
+  window.closeAISettingsModal();
+  if (window.soundFX) window.soundFX.playPop();
+  window.showToast('💾 Configuración de IA guardada con éxito', 'emerald');
+};
+
+window.updateGlobalAIStatusBadges = function() {
+  const settings = window.aiRecipeGenerator 
+    ? window.aiRecipeGenerator.getAISettings() 
+    : { apiKey: localStorage.getItem('fridgeflow_gemini_api_key') || '' };
+
+  const hasKey = Boolean(settings.apiKey && settings.apiKey.trim().length > 10);
+  const statusBadges = document.querySelectorAll('.ai-api-status-pill');
+  statusBadges.forEach(badge => {
+    if (hasKey) {
+      badge.className = 'badge badge-emerald ai-api-status-pill';
+      badge.innerHTML = `🟢 Gemini (${settings.textModel || 'gemini-3.7-flash-light'})`;
+    } else {
+      badge.className = 'badge badge-muted ai-api-status-pill';
+      badge.innerHTML = `⚙️ Configurar Gemini API`;
+    }
+  });
+
+  const textElem = document.getElementById('ai-api-status-text');
+  if (textElem) {
+    textElem.textContent = hasKey ? `🟢 Conectado (${settings.textModel || 'gemini-3.7-flash-light'})` : '🔑 Configurar API Key';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  initAISettingsHandlers();
+});
+

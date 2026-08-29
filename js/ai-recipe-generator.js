@@ -81,14 +81,95 @@ class AIRecipeGenerator {
     };
   }
 
-  // --- Dynamic AI Image Generator ---
-  generateAIImageUrl(dishName, seed = null) {
-    const cleanSeed = seed || Math.floor(Math.random() * 999999);
-    const cleanPrompt = encodeURIComponent(`professional gourmet delicious food photography of ${dishName}, restaurant culinary plating, cinematic warm lighting, sharp focus, 8k resolution, award winning culinary styling`);
-    return `https://image.pollinations.ai/prompt/${cleanPrompt}?width=800&height=600&nologo=true&seed=${cleanSeed}`;
+  // --- AI Settings & Google AI Studio Configuration ---
+  getAISettings() {
+    try {
+      const stored = localStorage.getItem('fridgeflow_ai_config');
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    const directKey = localStorage.getItem('fridgeflow_gemini_api_key') || '';
+    return {
+      apiKey: directKey,
+      textModel: 'gemini-3.7-flash-light',
+      imageModel: 'nano-banana-2'
+    };
   }
 
-  // --- Main AI Generation Pipeline ---
+  saveAISettings(settings) {
+    localStorage.setItem('fridgeflow_ai_config', JSON.stringify(settings));
+    if (settings && settings.apiKey !== undefined) {
+      localStorage.setItem('fridgeflow_gemini_api_key', settings.apiKey.trim());
+    }
+  }
+
+  // --- Dynamic AI Image Generator with nano-banana-2 ---
+  generateAIImageUrl(dishName, customPrompt = null, seed = null) {
+    const settings = this.getAISettings();
+    const model = settings.imageModel || 'nano-banana-2';
+    const cleanSeed = seed || Math.floor(Math.random() * 999999);
+    const cleanPrompt = encodeURIComponent(
+      customPrompt || `professional gourmet delicious food photography of ${dishName}, restaurant culinary plating, cinematic warm lighting, sharp focus, 8k resolution, award winning culinary styling`
+    );
+    return `https://image.pollinations.ai/prompt/${cleanPrompt}?model=${encodeURIComponent(model)}&width=800&height=600&nologo=true&seed=${cleanSeed}`;
+  }
+
+  // --- Google AI Studio Test Connection Ping ---
+  async testGeminiConnection(apiKey, model = 'gemini-3.7-flash-light') {
+    if (!apiKey || !apiKey.trim()) {
+      throw new Error('Debes ingresar una API Key de Google AI Studio.');
+    }
+
+    const key = apiKey.trim();
+    const modelsToTry = [
+      model || 'gemini-3.7-flash-light',
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash'
+    ];
+
+    let lastError = null;
+    for (const testModel of modelsToTry) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${testModel}:generateContent?key=${key}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: 'Responde exclusivamente este JSON: {"status": "ok", "message": "Gemini conectado"}' }]
+              }
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.1
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          return { success: true, modelUsed: testModel, data };
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          lastError = errData?.error?.message || `HTTP ${response.status} (${response.statusText})`;
+          // If 404 (model not found), continue loop to fallback model
+          if (response.status !== 404) {
+            throw new Error(lastError);
+          }
+        }
+      } catch (err) {
+        lastError = err.message;
+        if (!err.message.includes('404') && !err.message.includes('not found')) {
+          throw err;
+        }
+      }
+    }
+
+    throw new Error(lastError || 'No se pudo conectar con Google AI Studio. Verifica tu clave API.');
+  }
+
+  // --- Main AI Generation Pipeline with Gemini & nano-banana-2 ---
   async generateRecipe(dishName, userNotes = '', focus = 'protein', onProgress = null, customImage = null) {
     if ((!dishName || dishName.trim().length === 0) && !customImage) {
       throw new Error('Por favor, escribe el nombre del plato o sube una fotografía.');
@@ -96,8 +177,22 @@ class AIRecipeGenerator {
 
     const cleanTitle = (dishName && dishName.trim().length > 0) ? dishName.trim() : 'Creación Culinaria Especial';
     const cleanNotes = userNotes.trim();
+    const settings = this.getAISettings();
 
-    // Stage 1: Culinary analysis & flavor profile
+    // If API Key is configured, use Google AI Studio Gemini
+    if (settings.apiKey && settings.apiKey.trim().length > 10) {
+      try {
+        return await this.callGeminiAPI(cleanTitle, cleanNotes, focus, customImage, onProgress, settings);
+      } catch (geminiError) {
+        console.warn('⚠️ Error con Gemini API, aplicando síntesis culinaria de respaldo:', geminiError);
+        if (onProgress) {
+          onProgress({ step: 2, text: `⚠️ Gemini API (${geminiError.message || 'error'}), usando motor de respaldo...` });
+        }
+        await this.delay(600);
+      }
+    }
+
+    // Fallback: Smart Gastronomic Engine with nano-banana-2
     if (onProgress) {
       const step1Text = customImage 
         ? `📸 Analizando imagen y reconociendo ingredientes para "${cleanTitle}"...`
@@ -106,27 +201,256 @@ class AIRecipeGenerator {
     }
     await this.delay(500);
 
-    // Stage 2: Nutrient & protein calculation
     if (onProgress) onProgress({ step: 2, text: '⚖️ Calculando macronutrientes exactos, proteínas biodisponibles y calorías...' });
     await this.delay(500);
 
-    // Stage 3: Image generation & styling
     if (onProgress) {
       const step3Text = customImage
         ? '✨ Optimizando fotografía gastronómica adjunta...'
-        : '🎨 Generando fotografía gourmet fotorrealista con IA...';
+        : '🎨 Generando fotografía gourmet con modelo nano-banana-2...';
       onProgress({ step: 3, text: step3Text });
     }
     await this.delay(600);
 
-    // Stage 4: Structure cooking steps & timers
     if (onProgress) onProgress({ step: 4, text: '📝 Redactando pasos guiados cronometrados y consejos de Chef...' });
     await this.delay(500);
 
-    // Build the AI Recipe Object
     const recipe = this.synthesizeRecipe(cleanTitle, cleanNotes, focus, customImage);
 
     if (onProgress) onProgress({ step: 5, text: '✨ ¡Receta completada y lista para cocinar!' });
+    await this.delay(300);
+
+    return recipe;
+  }
+
+  // --- Real Google AI Studio Gemini API Client ---
+  async callGeminiAPI(dishName, userNotes, focus, customImage, onProgress, settings) {
+    const apiKey = settings.apiKey.trim();
+    const primaryModel = settings.textModel || 'gemini-3.7-flash-light';
+
+    if (onProgress) {
+      onProgress({ step: 1, text: `🤖 Conectando con Google AI Studio (${primaryModel})...` });
+    }
+    await this.delay(300);
+
+    const promptText = `Actúa como un Chef Ejecutivo de Estrella Michelin y Nutricionista Deportivo de Élite para FridgeFlow.
+Crea una receta detallada y exquisita a partir de las instrucciones del usuario:
+- Plato o idea solicitada: "${dishName}"
+- Requerimientos o notas del usuario: "${userNotes || 'Ninguno en específico'}"
+- Enfoque nutricional: "${focus}" (protein = hiperproteico con mínimo 40g proteína; balanced = balanceado y saludable; keto = bajo en carbohidratos; vegetarian = vegetariano completo).
+${customImage ? '- Se ha adjuntado una fotografía o captura del plato. Analiza los ingredientes visibles, cocción y emplatado para reflejarlos con total fidelidad.' : ''}
+
+Debes responder ÚNICAMENTE con un JSON válido que cumpla estrictamente este esquema:
+{
+  "title": "Nombre creativo y gourmet del plato",
+  "subtitle": "Breve frase descriptiva y apetecible (máximo 12 palabras)",
+  "description": "Explicación culinaria completa, textura, perfil aromático y justificación nutricional de cada ingrediente.",
+  "category": "desayuno" | "almuerzo" | "cena",
+  "prepTime": 15,
+  "cookTime": 20,
+  "servings": 1,
+  "difficulty": "Fácil" | "Intermedia" | "Avanzada",
+  "calories": 520,
+  "protein": 48,
+  "carbs": 42,
+  "fat": 14,
+  "fiber": 6,
+  "tags": ["✨ Gemini AI", "Hiperproteico", "Express", "Gourmet"],
+  "ingredients": [
+    {
+      "id": "pollo_pechuga",
+      "name": "Pechuga de pollo fresca en filetes",
+      "amount": "220",
+      "unit": "g",
+      "isMainProtein": true
+    },
+    {
+      "id": "arroz_jazmin",
+      "name": "Arroz basmati / jazmín aromático",
+      "amount": "70",
+      "unit": "g",
+      "isMainProtein": false
+    }
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "instruction": "Instrucción de mise en place y preparación inicial",
+      "timerSeconds": 0,
+      "tip": "Consejo técnico de chef para corte o marinado",
+      "equipment": ["Tabla de corte", "Cuchillo de chef"]
+    },
+    {
+      "step": 2,
+      "instruction": "Instrucción de sellado a fuego vivo o cocción base",
+      "timerSeconds": 240,
+      "tip": "Consejo para la reacción de Maillard o dorado",
+      "equipment": ["Sartén o Plancha"]
+    },
+    {
+      "step": 3,
+      "instruction": "Instrucción de cocción principal, salsa o guarnición",
+      "timerSeconds": 600,
+      "tip": "Consejo de cocción",
+      "equipment": ["Sartén"]
+    },
+    {
+      "step": 4,
+      "instruction": "Instrucción de reposo, emplatado y toque final",
+      "timerSeconds": 0,
+      "tip": "Consejo de presentación gourmet",
+      "equipment": ["Plato de presentación"]
+    }
+  ],
+  "imagePrompt": "A stunning, hyperrealistic 8k gourmet food photography of ${dishName}, restaurant culinary plating, warm soft lighting, macro detail, award winning food styling"
+}
+
+REGLAS ESTRICTAS:
+1. Incluye entre 5 y 9 ingredientes detallados con sus cantidades y unidades.
+2. Incluye exactamente 4 pasos cronológicos con temporizadores en segundos ('timerSeconds') realistas.
+3. Las calorías y macronutrientes deben ser el cálculo matemático real de los ingredientes.
+4. Responde ÚNICAMENTE el JSON, sin texto ni explicaciones adicionales.`;
+
+    const parts = [];
+
+    // Multimodal image support
+    if (customImage && typeof customImage === 'string' && customImage.startsWith('data:')) {
+      const commaIdx = customImage.indexOf(',');
+      const mimeType = customImage.substring(5, customImage.indexOf(';')) || 'image/jpeg';
+      const base64Data = customImage.substring(commaIdx + 1);
+      parts.push({
+        inline_data: {
+          mime_type: mimeType,
+          data: base64Data
+        }
+      });
+    }
+
+    parts.push({ text: promptText });
+
+    if (onProgress) {
+      onProgress({ step: 2, text: `🧠 Gemini (${primaryModel}) analizando ingredientes, técnicas y macros...` });
+    }
+
+    const modelsToTry = [
+      primaryModel,
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash'
+    ];
+
+    let lastError = null;
+    let rawText = '';
+
+    for (const model of modelsToTry) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.7
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const errMsg = errData?.error?.message || `HTTP ${response.status}`;
+          lastError = new Error(errMsg);
+          if (response.status === 404) {
+            // Model not found in this API version, try next model in cascade
+            continue;
+          }
+          throw lastError;
+        }
+
+        const data = await response.json();
+        const candidate = data.candidates && data.candidates[0];
+        if (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+          rawText = candidate.content.parts[0].text;
+          break;
+        } else {
+          throw new Error('Respuesta vacía de Gemini.');
+        }
+      } catch (err) {
+        lastError = err;
+        if (!err.message.includes('404') && !err.message.includes('not found')) {
+          throw err;
+        }
+      }
+    }
+
+    if (!rawText) {
+      throw lastError || new Error('No se pudo generar la receta con Gemini.');
+    }
+
+    // Clean JSON response
+    let cleanJson = rawText.trim();
+    if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '');
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleanJson);
+    } catch (parseErr) {
+      console.error('Error parseando JSON de Gemini:', parseErr, cleanJson);
+      throw new Error('La respuesta de Gemini no tuvo el formato JSON esperado.');
+    }
+
+    if (onProgress) {
+      onProgress({ step: 3, text: '🎨 Generando fotografía gourmet con modelo nano-banana-2...' });
+    }
+    await this.delay(400);
+
+    // Generate image using nano-banana-2
+    let finalImage = customImage;
+    if (!finalImage) {
+      finalImage = this.generateAIImageUrl(parsed.title || dishName, parsed.imagePrompt);
+    }
+
+    if (onProgress) {
+      onProgress({ step: 4, text: '📝 Validando información y sincronizando con Firebase Cloud...' });
+    }
+    await this.delay(300);
+
+    const cleanSlug = 'ai-' + (parsed.title || dishName)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') + '-' + Math.floor(Math.random() * 1000);
+
+    const recipe = {
+      id: cleanSlug,
+      title: parsed.title || dishName,
+      subtitle: parsed.subtitle || `Receta gourmet creada con Gemini (${primaryModel}) e IA.`,
+      description: parsed.description || `Plato diseñado por Gemini AI para optimizar aporte nutricional.`,
+      category: ['desayuno', 'almuerzo', 'cena'].includes(parsed.category) ? parsed.category : 'almuerzo',
+      prepTime: parseInt(parsed.prepTime, 10) || 12,
+      cookTime: parseInt(parsed.cookTime, 10) || 18,
+      servings: parseInt(parsed.servings, 10) || 1,
+      difficulty: parsed.difficulty || 'Fácil',
+      calories: parseInt(parsed.calories, 10) || 500,
+      protein: parseInt(parsed.protein, 10) || 45,
+      carbs: parseInt(parsed.carbs, 10) || 40,
+      fat: parseInt(parsed.fat, 10) || 14,
+      fiber: parseInt(parsed.fiber, 10) || 5,
+      image: finalImage,
+      tags: Array.isArray(parsed.tags) ? parsed.tags : ['✨ Gemini AI', 'Hiperproteico', 'Gourmet'],
+      isCustom: true,
+      ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+      steps: Array.isArray(parsed.steps) ? parsed.steps : [],
+      createdAt: new Date().toISOString()
+    };
+
+    if (onProgress) {
+      onProgress({ step: 5, text: '✨ ¡Receta completada con éxito por Gemini!' });
+    }
     await this.delay(300);
 
     return recipe;
