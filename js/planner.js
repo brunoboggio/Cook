@@ -290,41 +290,43 @@ function renderPlannerView() {
         </div>
 
         <!-- Meal Slots Container -->
-        <div style="display: flex; flex-direction: column; gap: 0.85rem; flex: 1;">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; flex: 1;">
           
           ${(config.includeBreakfast || breakfastRecipe) ? `
             <!-- BREAKFAST / SNACK SLOT -->
             <div class="meal-slot-card">
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.55rem; letter-spacing: 0.03em;">
-                <span>☀️ Desayuno / Snack</span>
-                ${breakfastRecipe ? `<span style="color: #34D399; font-weight: 800; font-size: 0.8rem;">+${breakfastRecipe.protein}g Prot</span>` : ''}
+              <div class="meal-slot-header">
+                <span>☀️ Desayuno</span>
+                ${breakfastRecipe ? `<span class="badge badge-emerald" style="font-size: 0.72rem; padding: 0.12rem 0.45rem; font-weight: 800;">+${breakfastRecipe.protein}g Prot</span>` : ''}
               </div>
 
               ${breakfastRecipe ? `
-                <div style="display: flex; gap: 0.75rem; align-items: center;">
-                  <img src="${breakfastRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${breakfastRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
-                  <div style="flex: 1; min-width: 0;">
+                <div class="meal-slot-body">
+                  <img src="${breakfastRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${breakfastRecipe.title}" class="meal-slot-thumb" onclick="window.openRecipeModal('${breakfastRecipe.id}')" />
+                  <div class="meal-slot-info">
                     <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${breakfastRecipe.id}')" title="${breakfastRecipe.title}">
                       ${breakfastRecipe.title}
                     </div>
-                    <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                      ⏱️ ${breakfastRecipe.prepTime + breakfastRecipe.cookTime}m · ${breakfastRecipe.calories} kcal
+                    <div class="meal-slot-meta">
+                      <span>⏱️ ${breakfastRecipe.prepTime + breakfastRecipe.cookTime}m</span>
+                      <span>·</span>
+                      <span>${breakfastRecipe.calories} kcal</span>
                     </div>
                   </div>
                 </div>
-                <div class="meal-card-actions">
-                  <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'breakfast')" title="Repetir desayuno al día siguiente">
-                    🔁 <span>Repetir</span>
+                <div class="meal-slot-actions">
+                  <button class="meal-btn-icon" onclick="duplicateMealToNextDay('${dayKey}', 'breakfast')" title="Repetir desayuno al día siguiente">
+                    🔁
                   </button>
-                  <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')" title="Cambiar receta">
+                  <button class="meal-btn-swap" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')" title="Cambiar receta">
                     🔄 <span>Cambiar</span>
                   </button>
-                  <a href="cook.html?recipe=${breakfastRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                  <a href="cook.html?recipe=${breakfastRecipe.id}" class="meal-btn-cook" title="Cocinar esta receta en Modo Chef">
                     👨‍🍳 <span>Cocinar</span>
                   </a>
                 </div>
               ` : `
-                <div style="text-align: center; padding: 0.75rem 0; cursor: pointer; color: var(--text-muted); font-size: 0.8rem;" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')">
+                <div class="meal-slot-empty" onclick="openRecipeSwapModal('${dayKey}', 'breakfast')">
                   + Asignar Desayuno
                 </div>
               `}
@@ -333,36 +335,38 @@ function renderPlannerView() {
 
           <!-- LUNCH SLOT -->
           <div class="meal-slot-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.55rem; letter-spacing: 0.03em;">
+            <div class="meal-slot-header">
               <span>🍲 Almuerzo</span>
-              ${lunchRecipe ? `<span style="color: #34D399; font-weight: 800; font-size: 0.8rem;">+${lunchRecipe.protein}g Prot</span>` : ''}
+              ${lunchRecipe ? `<span class="badge badge-emerald" style="font-size: 0.72rem; padding: 0.12rem 0.45rem; font-weight: 800;">+${lunchRecipe.protein}g Prot</span>` : ''}
             </div>
 
             ${lunchRecipe ? `
-              <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <img src="${lunchRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${lunchRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
-                <div style="flex: 1; min-width: 0;">
+              <div class="meal-slot-body">
+                <img src="${lunchRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${lunchRecipe.title}" class="meal-slot-thumb" onclick="window.openRecipeModal('${lunchRecipe.id}')" />
+                <div class="meal-slot-info">
                   <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${lunchRecipe.id}')" title="${lunchRecipe.title}">
                     ${lunchRecipe.title}
                   </div>
-                  <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                    ⏱️ ${lunchRecipe.prepTime + lunchRecipe.cookTime}m · ${lunchRecipe.calories} kcal
+                  <div class="meal-slot-meta">
+                    <span>⏱️ ${lunchRecipe.prepTime + lunchRecipe.cookTime}m</span>
+                    <span>·</span>
+                    <span>${lunchRecipe.calories} kcal</span>
                   </div>
                 </div>
               </div>
-              <div class="meal-card-actions">
-                <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'lunch')" title="Repetir almuerzo al día siguiente (Batch cooking)">
-                  🔁 <span>Repetir</span>
+              <div class="meal-slot-actions">
+                <button class="meal-btn-icon" onclick="duplicateMealToNextDay('${dayKey}', 'lunch')" title="Repetir almuerzo al día siguiente (Batch cooking)">
+                  🔁
                 </button>
-                <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'lunch')" title="Cambiar receta">
+                <button class="meal-btn-swap" onclick="openRecipeSwapModal('${dayKey}', 'lunch')" title="Cambiar receta">
                   🔄 <span>Cambiar</span>
                 </button>
-                <a href="cook.html?recipe=${lunchRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                <a href="cook.html?recipe=${lunchRecipe.id}" class="meal-btn-cook" title="Cocinar esta receta en Modo Chef">
                   👨‍🍳 <span>Cocinar</span>
                 </a>
               </div>
             ` : `
-              <div style="text-align: center; padding: 0.75rem 0; cursor: pointer; color: var(--text-muted); font-size: 0.8rem;" onclick="openRecipeSwapModal('${dayKey}', 'lunch')">
+              <div class="meal-slot-empty" onclick="openRecipeSwapModal('${dayKey}', 'lunch')">
                 + Asignar Almuerzo
               </div>
             `}
@@ -370,36 +374,38 @@ function renderPlannerView() {
 
           <!-- DINNER SLOT -->
           <div class="meal-slot-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.55rem; letter-spacing: 0.03em;">
+            <div class="meal-slot-header">
               <span>🌙 Cena</span>
-              ${dinnerRecipe ? `<span style="color: #34D399; font-weight: 800; font-size: 0.8rem;">+${dinnerRecipe.protein}g Prot</span>` : ''}
+              ${dinnerRecipe ? `<span class="badge badge-emerald" style="font-size: 0.72rem; padding: 0.12rem 0.45rem; font-weight: 800;">+${dinnerRecipe.protein}g Prot</span>` : ''}
             </div>
 
             ${dinnerRecipe ? `
-              <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <img src="${dinnerRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${dinnerRecipe.title}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.35); flex-shrink: 0;" />
-                <div style="flex: 1; min-width: 0;">
+              <div class="meal-slot-body">
+                <img src="${dinnerRecipe.image}" onerror="this.src='assets/images/recipe_mediterranean_pasta.jpg'" alt="${dinnerRecipe.title}" class="meal-slot-thumb" onclick="window.openRecipeModal('${dinnerRecipe.id}')" />
+                <div class="meal-slot-info">
                   <div class="meal-slot-recipe-title" onclick="window.openRecipeModal('${dinnerRecipe.id}')" title="${dinnerRecipe.title}">
                     ${dinnerRecipe.title}
                   </div>
-                  <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                    ⏱️ ${dinnerRecipe.prepTime + dinnerRecipe.cookTime}m · ${dinnerRecipe.calories} kcal
+                  <div class="meal-slot-meta">
+                    <span>⏱️ ${dinnerRecipe.prepTime + dinnerRecipe.cookTime}m</span>
+                    <span>·</span>
+                    <span>${dinnerRecipe.calories} kcal</span>
                   </div>
                 </div>
               </div>
-              <div class="meal-card-actions">
-                <button class="meal-card-btn" onclick="duplicateMealToNextDay('${dayKey}', 'dinner')" title="Repetir cena al día siguiente (Batch cooking)">
-                  🔁 <span>Repetir</span>
+              <div class="meal-slot-actions">
+                <button class="meal-btn-icon" onclick="duplicateMealToNextDay('${dayKey}', 'dinner')" title="Repetir cena al día siguiente (Batch cooking)">
+                  🔁
                 </button>
-                <button class="meal-card-btn" onclick="openRecipeSwapModal('${dayKey}', 'dinner')" title="Cambiar receta">
+                <button class="meal-btn-swap" onclick="openRecipeSwapModal('${dayKey}', 'dinner')" title="Cambiar receta">
                   🔄 <span>Cambiar</span>
                 </button>
-                <a href="cook.html?recipe=${dinnerRecipe.id}" class="meal-card-btn meal-card-btn-cook" title="Cocinar esta receta">
+                <a href="cook.html?recipe=${dinnerRecipe.id}" class="meal-btn-cook" title="Cocinar esta receta en Modo Chef">
                   👨‍🍳 <span>Cocinar</span>
                 </a>
               </div>
             ` : `
-              <div style="text-align: center; padding: 0.75rem 0; cursor: pointer; color: var(--text-muted); font-size: 0.8rem;" onclick="openRecipeSwapModal('${dayKey}', 'dinner')">
+              <div class="meal-slot-empty" onclick="openRecipeSwapModal('${dayKey}', 'dinner')">
                 + Asignar Cena
               </div>
             `}
