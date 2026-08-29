@@ -58,6 +58,7 @@ Diseñada con estética **Awwwards Obsidian Dark & Linen Light**, 100% responsiv
 ## 🌐 Producción & Despliegue Continuo (CI/CD)
 
 - **URL Oficial**: [http://cook.liberatueco.com/](http://cook.liberatueco.com/)
+- **Servidor BanaHosting**: `bh8958.banahosting.com`
 - Despliegue automático vía GitHub Actions sincronizado con BanaHosting.
 
 ---
